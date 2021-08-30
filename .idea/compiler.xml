@@ -9,5 +9,8 @@
         <module name="DeltaForce" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="DeltaForce" target="8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
