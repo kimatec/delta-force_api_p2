@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.Objects;
 
-@Document(collation = "users")
+@Document(collection = "users")
 public class AppUser {
     private String id;
 
