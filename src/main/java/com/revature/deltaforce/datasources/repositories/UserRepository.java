@@ -5,9 +5,12 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.util.exceptions.DataSourceException;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.bson.Document;
+
+import javax.print.Doc;
 import java.util.List;
 
 @Repository
@@ -45,7 +48,15 @@ public class UserRepository implements CrudRepository<AppUser> {
 
     @Override
     public AppUser save(AppUser newResource) {
-        return null;
+
+        try {
+            newResource.setId(new ObjectId().toString());
+            usersCollection.insertOne(newResource);
+            return newResource;
+        } catch(Exception e) {
+            throw new DataSourceException(e.getMessage());
+        }
+
     }
 
     @Override

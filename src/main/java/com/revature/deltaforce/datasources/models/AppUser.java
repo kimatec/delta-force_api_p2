@@ -10,16 +10,28 @@ public class AppUser {
     private String email;
     private String username;
     private String password;
-    private HashSet<String> favTopics = new HashSet<>();
+    private HashSet<String> favTopics;
 
     public AppUser() { super(); }
 
-    public AppUser(String firstName, String lastName, String email, String username, String password) {
+    public AppUser(String id, String firstName, String lastName, String email, String username, String password) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.username = username;
         this.password = password;
+        this.favTopics = new HashSet<>();
+    }
+
+    // For pulling user data from database
+    public AppUser(String firstName, String lastName, String email, String username, String password, HashSet<String> favTopics) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.favTopics = favTopics;
     }
 
     public String getId() {
@@ -74,7 +86,7 @@ public class AppUser {
         return favTopics;
     }
 
-    public void setFavTopics(String topic) {
+    public void addFavTopics(String topic) {
         this.favTopics.add(topic);
     }
 
