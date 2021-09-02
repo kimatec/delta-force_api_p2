@@ -1,4 +1,4 @@
-package java.com.revature.services;
+package com.revature.deltaforce.services;
 
 public class UserServiceTestSuite {
 }
