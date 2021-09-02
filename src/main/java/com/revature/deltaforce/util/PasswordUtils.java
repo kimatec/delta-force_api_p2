@@ -25,7 +25,7 @@ public class PasswordUtils {
      * <p>
      * Date: 06 August 2021
      */
-    @Value("${salt}")
+    @Value("${encrypt.salt}")
     private String salt;
 
     /**
