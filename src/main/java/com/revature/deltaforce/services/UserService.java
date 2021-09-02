@@ -9,8 +9,6 @@ import com.revature.deltaforce.web.dtos.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class UserService {
 
@@ -23,6 +21,12 @@ public class UserService {
         this.passwordUtils = passwordUtils;
     }
 
+    /**
+     * Authenticate an existing user with valid credentials.
+     * @param username
+     * @param password
+     * @return
+     */
     public Principal login(String username, String password){
 
         if(username == null || username.trim().equals("") || password == null || password.trim().equals("")){
@@ -37,5 +41,17 @@ public class UserService {
         }
 
         return new Principal(authUser);
+    }
+
+    /**
+     * Send new user fields to repository.
+     * TODO: add validation
+     * @param newUser
+     * @return
+     */
+    public Principal registerNewUser(AppUser newUser) {
+        newUser.setPassword(passwordUtils.generateSecurePassword(newUser.getPassword()));
+        AppUser insertedUser = userRepo.save(newUser);
+        return new Principal(insertedUser);
     }
 }

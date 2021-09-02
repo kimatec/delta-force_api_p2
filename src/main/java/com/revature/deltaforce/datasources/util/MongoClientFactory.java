@@ -31,10 +31,10 @@ public class MongoClientFactory {
     @Value("${dbName}")
     private String dbName;
 
-    @Value("${username}")
+    @Value("${db.username}")
     private String username;
 
-    @Value("#{'${password}'.toCharArray()}")
+    @Value("#{'${db.password}'.toCharArray()}")
     private char[] password;
 
     @PostConstruct
