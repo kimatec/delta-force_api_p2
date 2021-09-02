@@ -15,7 +15,7 @@ public class LoggingAspect {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Pointcut("within(com.revature.deltaforce..*")
+    @Pointcut("within(com.revature.deltaforce..*)")
     public void logAll() {}
 
     @Before("logAll()")
