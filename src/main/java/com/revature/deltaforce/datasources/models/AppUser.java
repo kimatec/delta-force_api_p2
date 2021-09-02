@@ -1,15 +1,31 @@
 package com.revature.deltaforce.datasources.models;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.Objects;
 
+@Document(collection = "users")
 public class AppUser {
     private String id;
+
+    @NotBlank
     private String firstName;
+
+    @NotBlank
     private String lastName;
+
+    @Email
     private String email;
+
+    @NotBlank
     private String username;
+
+    @NotBlank
     private String password;
+
     private HashSet<String> favTopics;
 
     public AppUser() { super(); }

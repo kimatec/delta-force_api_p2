@@ -28,15 +28,10 @@ public class UserService {
      * @return
      */
     public Principal login(String username, String password){
-
-        if(username == null || username.trim().equals("") || password == null || password.trim().equals("")){
-            throw new InvalidRequestException("Invalid user credentials provided!");
-        }
-
         String encryptedPass = passwordUtils.generateSecurePassword(password);
-        AppUser authUser = userRepo.findUserByCredentials(username, encryptedPass);
+        AppUser authUser = userRepo.findAppUserByUsernameAndPassword(username, encryptedPass);
 
-        if(authUser == null){
+        if(authUser == null) {
             throw new InvalidRequestException("Invalid credentials given!");
         }
 
