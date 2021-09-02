@@ -4,9 +4,10 @@ package com.revature.deltaforce.datasources.repositories;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.revature.deltaforce.datasources.models.AppUser;
+import com.revature.deltaforce.util.exceptions.DataSourceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
+import org.bson.Document;
 import java.util.List;
 
 @Repository
@@ -17,6 +18,19 @@ public class UserRepository implements CrudRepository<AppUser> {
     @Autowired
     public UserRepository(MongoClient mongoClient) {
         this.usersCollection = mongoClient.getDatabase("DeltaForce").getCollection("users", AppUser.class);
+    }
+
+    public AppUser findUserByCredentials(String username, String encryptedPass) {
+
+        try{
+
+            Document queryDoc = new Document("username", username).append("password", encryptedPass);
+            return usersCollection.find(queryDoc).first();
+
+        }catch (Exception e){
+            throw new DataSourceException("An unexpected exception");
+        }
+
     }
 
     @Override
@@ -43,4 +57,6 @@ public class UserRepository implements CrudRepository<AppUser> {
     public boolean deleteById(int id) {
         return false;
     }
+
+
 }
