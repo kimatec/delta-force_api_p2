@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.util.HashSet;
 
@@ -30,25 +29,20 @@ public class AppUser {
     @NotEmpty
     private String password;
 
-    private HashSet<String> favTopics;
+    private HashSet<String> favTopics = new HashSet<>();
 
-    public AppUser(String id, String firstName, String lastName, String email, String username, String password) {
-        this.id = id;
+
+    public AppUser(String firstName, String lastName, String email, String username, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.username = username;
         this.password = password;
-        this.favTopics = new HashSet<>();
     }
 
     // For pulling user data from database
     public AppUser(String firstName, String lastName, String email, String username, String password, HashSet<String> favTopics) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.username = username;
-        this.password = password;
+        this(firstName, lastName, email, username, password);
         this.favTopics = favTopics;
     }
 }

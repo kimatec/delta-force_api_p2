@@ -6,6 +6,7 @@ import com.revature.deltaforce.datasources.repositories.UserRepository;
 import com.revature.deltaforce.util.PasswordUtils;
 import com.revature.deltaforce.util.exceptions.AuthenticationException;
 import com.revature.deltaforce.util.exceptions.InvalidRequestException;
+import com.revature.deltaforce.util.exceptions.ResourcePersistenceException;
 import com.revature.deltaforce.web.dtos.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,13 +42,18 @@ public class UserService {
 
     /**
      * Send new user fields to repository.
-     * TODO: add validation
-     * @param newUser
-     * @return
+     *
+     * @param newUser - new user object
+     * @return Principal insertedUser - new principal object for creating a session
      */
-    public Principal registerNewUser(AppUser newUser) {
+    public AppUser registerNewUser(AppUser newUser) {
+        if (userRepo.findAppUserByUsername(newUser.getUsername()) != null) {
+            throw new ResourcePersistenceException("Provided username is already taken!");
+        }
+        if (userRepo.findAppUserByEmail(newUser.getEmail()) != null) {
+            throw new ResourcePersistenceException("Provided email is already taken!");
+        }
         newUser.setPassword(passwordUtils.generateSecurePassword(newUser.getPassword()));
-        AppUser insertedUser = userRepo.save(newUser);
-        return new Principal(insertedUser);
+        return userRepo.save(newUser);
     }
 }

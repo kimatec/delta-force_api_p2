@@ -1,6 +1,5 @@
 package com.revature.deltaforce.web.filters;
 
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
