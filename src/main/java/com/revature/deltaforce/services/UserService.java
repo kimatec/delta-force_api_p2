@@ -4,7 +4,9 @@ package com.revature.deltaforce.services;
 import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.datasources.repositories.UserRepository;
 import com.revature.deltaforce.util.PasswordUtils;
+import com.revature.deltaforce.util.exceptions.AuthenticationException;
 import com.revature.deltaforce.util.exceptions.InvalidRequestException;
+import com.revature.deltaforce.util.exceptions.ResourcePersistenceException;
 import com.revature.deltaforce.web.dtos.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,16 +30,11 @@ public class UserService {
      * @return
      */
     public Principal login(String username, String password){
-
-        if(username == null || username.trim().equals("") || password == null || password.trim().equals("")){
-            throw new InvalidRequestException("Invalid user credentials provided!");
-        }
-
         String encryptedPass = passwordUtils.generateSecurePassword(password);
-        AppUser authUser = userRepo.findUserByCredentials(username, encryptedPass);
+        AppUser authUser = userRepo.findAppUserByUsernameAndPassword(username, encryptedPass);
 
-        if(authUser == null){
-            throw new InvalidRequestException("Invalid credentials given!");
+        if(authUser == null) {
+            throw new AuthenticationException("Invalid credentials given!");
         }
 
         return new Principal(authUser);
@@ -45,13 +42,18 @@ public class UserService {
 
     /**
      * Send new user fields to repository.
-     * TODO: add validation
-     * @param newUser
-     * @return
+     *
+     * @param newUser - new user object
+     * @return Principal insertedUser - new principal object for creating a session
      */
-    public Principal registerNewUser(AppUser newUser) {
+    public AppUser registerNewUser(AppUser newUser) {
+        if (userRepo.findAppUserByUsername(newUser.getUsername()) != null) {
+            throw new ResourcePersistenceException("Provided username is already taken!");
+        }
+        if (userRepo.findAppUserByEmail(newUser.getEmail()) != null) {
+            throw new ResourcePersistenceException("Provided email is already taken!");
+        }
         newUser.setPassword(passwordUtils.generateSecurePassword(newUser.getPassword()));
-        AppUser insertedUser = userRepo.save(newUser);
-        return new Principal(insertedUser);
+        return userRepo.save(newUser);
     }
 }

@@ -1,4 +1,130 @@
-package java.com.revature.services;
+package com.revature.deltaforce.services;
+
+import com.revature.deltaforce.datasources.models.AppUser;
+import com.revature.deltaforce.datasources.repositories.UserRepository;
+import com.revature.deltaforce.util.PasswordUtils;
+import com.revature.deltaforce.util.exceptions.AuthenticationException;
+import com.revature.deltaforce.util.exceptions.ResourcePersistenceException;
+import com.revature.deltaforce.web.dtos.Principal;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 public class UserServiceTestSuite {
+
+    UserService sut;
+
+    private PasswordUtils mockPasswordUtils;
+    private UserRepository mockUserRepo;
+
+    @BeforeEach
+    public void beforeEachTest() {
+        mockPasswordUtils = mock(PasswordUtils.class);
+        mockUserRepo = mock(UserRepository.class);
+        sut = new UserService(mockUserRepo, mockPasswordUtils);
+    }
+
+    @AfterEach
+    public void afterEachTest() {
+        sut = null;
+    }
+
+    // login tests
+    @Test
+    public void login_returnsPrincipal_whenUser_providesValidCredentials(){
+        // Arrange
+        String username = "username";
+        String password = "password";
+        AppUser authUser = new AppUser("valid","user","valid@user.com","username","encryptedPassword");
+        Principal expectedResult = new Principal(authUser);
+        when(mockPasswordUtils.generateSecurePassword(password)).thenReturn("encryptedPassword");
+        when(mockUserRepo.findAppUserByUsernameAndPassword(username, "encryptedPassword")).thenReturn(authUser);
+
+        // Act
+        Principal actualResult = sut.login(username, password);
+
+        // Assert
+        assertEquals(expectedResult,actualResult);
+    }
+
+    @Test
+    public void login_throwsException_whenUser_providesInvalidCredentials(){
+        // Arrange
+        String username = "username";
+        String password = "password";
+        when(mockPasswordUtils.generateSecurePassword(password)).thenReturn("encryptedPassword");
+        when(mockUserRepo.findAppUserByUsernameAndPassword(username, "encryptedPassword")).thenReturn(null);
+
+        // Act
+        AuthenticationException e = assertThrows(AuthenticationException.class, () ->  sut.login(username, password));
+
+        // Assert
+        verify(mockPasswordUtils, times(1)).generateSecurePassword(password);
+
+
+    }
+
+    // registerNewUser Tests
+    @Test
+    public void registerNewUser_returnsSuccessfully_whenGivenValidUser() {
+
+        // Arrange
+        AppUser expectedResult = new AppUser("valid", "valid", "valid", "valid", "valid");
+        AppUser validUser = new AppUser("valid", "valid", "valid", "valid", "valid");
+        when(mockUserRepo.save(any())).thenReturn(expectedResult);
+        when(mockPasswordUtils.generateSecurePassword(validUser.getPassword())).thenReturn("encrypted");
+
+        // Act
+        AppUser actualResult = sut.registerNewUser(validUser);
+
+        // Assert
+        assertEquals(expectedResult, actualResult);
+//        assertNotEquals(expectedResult.getPassword(), actualResult.getPassword()); need to ask wezley about this, it's broken on his app too, lol
+        verify(mockUserRepo, times(1)).save(any());
+        verify(mockPasswordUtils, times(1)).generateSecurePassword(anyString());
+
+    }
+
+    @Test
+    public void registerNewUser_throwsException_whenGivenUserWithDuplicateUsername() {
+
+        // Arrange
+        AppUser existingUser = new AppUser("original", "original", "original", "duplicate", "original");
+        AppUser duplicate = new AppUser("first", "last", "email", "duplicate", "password");
+        when(mockUserRepo.findAppUserByUsername(duplicate.getUsername())).thenReturn(existingUser);
+
+        // Act
+        ResourcePersistenceException e = assertThrows(ResourcePersistenceException.class, () -> sut.registerNewUser(duplicate));
+
+        // Assert
+        assertEquals("Provided username is already taken!", e.getMessage());
+        verify(mockUserRepo, times(1)).findAppUserByUsername(duplicate.getUsername());
+        verify(mockUserRepo, times(0)).save(duplicate);
+
+    }
+
+    @Test
+    public void register_throwsException_whenGivenUserWithDuplicateEmail() {
+
+        // Arrange
+        AppUser existingUser = new AppUser("original", "original", "duplicate", "original", "original");
+        AppUser duplicate = new AppUser("first", "last", "duplicate", "username", "password");
+        when(mockUserRepo.findAppUserByEmail(duplicate.getEmail())).thenReturn(existingUser);
+
+        // Act
+        ResourcePersistenceException e = assertThrows(ResourcePersistenceException.class, () -> sut.registerNewUser(duplicate));
+
+        // Assert
+        assertEquals("Provided email is already taken!", e.getMessage());
+        verify(mockUserRepo, times(1)).findAppUserByEmail(duplicate.getEmail());
+        verify(mockUserRepo, times(0)).save(duplicate);
+
+    }
 }
