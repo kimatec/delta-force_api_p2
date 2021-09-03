@@ -35,13 +35,21 @@ public class SecurityAspect {
 
     @Around("@annotation(com.revature.deltaforce.web.util.security.Secured)")
     public Object secureEndpoint(ProceedingJoinPoint pjp) throws Throwable {
-        Method method = ((MethodSignature) pjp.getSignature()).getMethod();
-        Secured securedAnnotation = method.getAnnotation(Secured.class);
-        List<String> allowedRoles = Arrays.asList(securedAnnotation.allowedRoles());
+
+        List<String> allowedRoles = Arrays.asList(
+                ((MethodSignature) pjp.getSignature())
+                                      .getMethod()
+                                      .getAnnotation(Secured.class)
+                                      .allowedRoles()
+        );
+
 
         HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
-        Principal principal = parseToken(req).orElseThrow(() -> new AuthenticationException("Request originates from an unauthenticated source."));
+        Principal principal = parseToken(req)
+                .orElseThrow(() ->
+                new AuthenticationException("Request originates from an unauthenticated source.")
+        );
 
         return pjp.proceed();
     }
@@ -58,9 +66,9 @@ public class SecurityAspect {
             String token = header.replaceAll(jwtConfig.getPrefix(), "");
 
             Claims jwtClaims = Jwts.parser()
-                    .setSigningKey(jwtConfig.getSigningKey())
-                    .parseClaimsJws(token)
-                    .getBody();
+                                   .setSigningKey(jwtConfig.getSigningKey())
+                                   .parseClaimsJws(token)
+                                   .getBody();
 
             return Optional.of(new Principal(jwtClaims));
         } catch (Exception e) {

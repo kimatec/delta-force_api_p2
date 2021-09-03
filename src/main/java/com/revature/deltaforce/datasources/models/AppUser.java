@@ -4,6 +4,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.HashSet;
 import java.util.Objects;
 
@@ -11,19 +12,19 @@ import java.util.Objects;
 public class AppUser {
     private String id;
 
-    @NotBlank
+    @NotEmpty
     private String firstName;
 
-    @NotBlank
+    @NotEmpty
     private String lastName;
 
     @Email
     private String email;
 
-    @NotBlank
+    @NotEmpty
     private String username;
 
-    @NotBlank
+    @NotEmpty
     private String password;
 
     private HashSet<String> favTopics;
