@@ -9,9 +9,6 @@ import java.net.URL;
 
 @Repository
 public interface ArticleRepository extends MongoRepository<DeltaArticle, String> {
-    DeltaArticle findDeltaArticlebyUrl(URL url);
-    DeltaArticle updateDeltaArticlewithDeltaArticle(DeltaArticle newArticle, DeltaArticle oldArticle);
-    DeltaArticle deleteDeltaArticlebyUrl(URL url);
-    DeltaArticle addDeltaArticlebyUrl(URL url);
-
+    DeltaArticle findDeltaArticleByUrl(URL url);
+    DeltaArticle deleteDeltaArticleByUrl(URL url);
 }

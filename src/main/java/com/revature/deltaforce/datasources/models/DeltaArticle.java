@@ -2,6 +2,7 @@ package com.revature.deltaforce.datasources.models;
 
 import com.revature.deltaforce.web.dtos.Source;
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -9,8 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@Document(collection = "articles")
 public class DeltaArticle {
 
+    private String id;
     private Source source;
     private String author;
     private String title;
