@@ -30,6 +30,14 @@ public class AppUser {
 
     public AppUser() { super(); }
 
+    public AppUser(String firstName, String lastName, String email, String username, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+    }
+
     // For pulling user data from database
     public AppUser(String firstName, String lastName, String email, String username, String password, HashSet<String> favTopics) {
         this.firstName = firstName;
