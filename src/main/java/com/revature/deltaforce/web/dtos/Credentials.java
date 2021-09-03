@@ -1,10 +1,14 @@
 package com.revature.deltaforce.web.dtos;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.Objects;
 
 public class Credentials {
 
+    @NotEmpty
     private String username;
+
+    @NotEmpty
     private String password;
 
     public Credentials(){ super();}
