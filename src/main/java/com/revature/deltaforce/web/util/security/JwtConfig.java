@@ -15,8 +15,7 @@ public class JwtConfig {
     @Value("${jwt.header}")
     private String header;
 
-    @Value("${jwt.prefix}")
-    private String prefix;
+    private String prefix = "Bearer ";
 
     @Value("${jwt.secret}")
     private String secret;

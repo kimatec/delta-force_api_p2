@@ -28,5 +28,6 @@ hs_err_pid*
 
 #properties files
 *.properties
+application.yml
 
 target/

@@ -5,13 +5,10 @@ import com.revature.deltaforce.services.UserService;
 import com.revature.deltaforce.web.dtos.Principal;
 import com.revature.deltaforce.web.util.security.TokenGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 /**
  * The RegistrationController allows new users to register a new user account with the application.
@@ -30,8 +27,8 @@ public class RegistrationController {
     }
 
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public Principal registerNewUser(@RequestBody AppUser newUser, HttpServletResponse resp) {
-        Principal principal = userService.registerNewUser(newUser);
+    public Principal registerNewUser(@RequestBody @Valid AppUser newUser, HttpServletResponse resp) {
+        Principal principal = new Principal(userService.registerNewUser(newUser));
         resp.setHeader(tokenGenerator.getJwtHeader(), tokenGenerator.createToken(principal));
         return principal;
     }
