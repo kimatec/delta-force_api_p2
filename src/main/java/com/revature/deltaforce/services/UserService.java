@@ -4,6 +4,7 @@ package com.revature.deltaforce.services;
 import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.datasources.repositories.UserRepository;
 import com.revature.deltaforce.util.PasswordUtils;
+import com.revature.deltaforce.util.exceptions.AuthenticationException;
 import com.revature.deltaforce.util.exceptions.InvalidRequestException;
 import com.revature.deltaforce.web.dtos.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class UserService {
         AppUser authUser = userRepo.findAppUserByUsernameAndPassword(username, encryptedPass);
 
         if(authUser == null) {
-            throw new InvalidRequestException("Invalid credentials given!");
+            throw new AuthenticationException("Invalid credentials given!");
         }
 
         return new Principal(authUser);
