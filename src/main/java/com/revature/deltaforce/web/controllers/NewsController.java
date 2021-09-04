@@ -24,14 +24,13 @@ public class NewsController {
     private final String newsServiceUrl = "https://newsapi.org/v2/";
 
     private final ArticleService articleService;
+    private final RestTemplate restClient;
 
     @Autowired
-    public NewsController(ArticleService articleService){
+    public NewsController(ArticleService articleService, RestTemplate restClient) {
         this.articleService = articleService;
+        this.restClient = restClient;
     }
-
-    @Autowired
-    private RestTemplate restClient;
 
     // example: http://localhost:5000/news
     @GetMapping

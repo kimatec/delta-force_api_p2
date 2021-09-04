@@ -1,7 +1,10 @@
 package com.revature.deltaforce.web.dtos;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
+@Data
 public class ErrorResponse {
 
     private int statusCode;

@@ -1,9 +1,6 @@
 package com.revature.deltaforce.web.util;
 
-import com.revature.deltaforce.util.exceptions.AuthenticationException;
-import com.revature.deltaforce.util.exceptions.InvalidRequestException;
-import com.revature.deltaforce.util.exceptions.ResourceNotFoundException;
-import com.revature.deltaforce.util.exceptions.ResourcePersistenceException;
+import com.revature.deltaforce.util.exceptions.*;
 import com.revature.deltaforce.web.dtos.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -37,9 +34,12 @@ public class ErrorResponseAspect {
         return new ErrorResponse(401, e.getMessage());
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({
+            ResourceNotFoundException.class,
+            ExternalDataSourceException.class
+    })
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException e) {
+    public ErrorResponse handleResourceNotFoundException(Exception e) {
         return new ErrorResponse(404, e.getMessage());
     }
 

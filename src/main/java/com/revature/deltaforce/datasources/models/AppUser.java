@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
 
 @Data
@@ -14,19 +14,20 @@ import java.util.HashSet;
 public class AppUser {
     private String id;
 
-    @NotEmpty
+    @NotBlank(message = "You must have a first name")
     private String firstName;
 
-    @NotEmpty
+    @NotBlank(message = "Last name can not be null or blank")
     private String lastName;
 
     @Email
+    @NotBlank(message = "Email can not be null or blank")
     private String email;
 
-    @NotEmpty
+    @NotBlank(message = "You need to have a username")
     private String username;
 
-    @NotEmpty
+    @NotBlank(message = "Password can not be null or blank")
     private String password;
 
     private HashSet<String> favTopics = new HashSet<>();
