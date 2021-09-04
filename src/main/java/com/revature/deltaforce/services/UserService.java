@@ -5,7 +5,6 @@ import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.datasources.repositories.UserRepository;
 import com.revature.deltaforce.util.PasswordUtils;
 import com.revature.deltaforce.util.exceptions.AuthenticationException;
-import com.revature.deltaforce.util.exceptions.InvalidRequestException;
 import com.revature.deltaforce.util.exceptions.ResourcePersistenceException;
 import com.revature.deltaforce.web.dtos.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
