@@ -1,5 +1,6 @@
 package com.revature.deltaforce.web.util.security;
 
+import com.revature.deltaforce.util.exceptions.AuthenticationException;
 import com.revature.deltaforce.web.dtos.Principal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.naming.AuthenticationException;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Arrays;
