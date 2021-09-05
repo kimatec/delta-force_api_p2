@@ -3,6 +3,7 @@ package com.revature.deltaforce.web.controllers;
 import com.revature.deltaforce.datasources.models.DeltaArticle;
 import com.revature.deltaforce.datasources.models.NewsResponse;
 import com.revature.deltaforce.services.ArticleService;
+import com.revature.deltaforce.web.util.security.Secured;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +35,7 @@ public class NewsController {
 
     // example: http://localhost:5000/news
     @GetMapping
+    @Secured(allowedRoles = {})
     public List<DeltaArticle> getNews() {
         String url = newsServiceUrl + "top-headlines?country=us&category=business&apiKey=" + apiKey;
         NewsResponse newsResponse = restClient.getForObject(url, NewsResponse.class);
@@ -42,6 +44,7 @@ public class NewsController {
 
     // example: http://localhost:5000/news/q?search=tech
     @GetMapping("/q")
+    @Secured(allowedRoles = {})
     public List<DeltaArticle> searchNews(@RequestParam(required = true) String search) {
         String url = newsServiceUrl + "everything?q=" + search + "&apiKey=" + apiKey;
         NewsResponse newsResponse = restClient.getForObject(url, NewsResponse.class);

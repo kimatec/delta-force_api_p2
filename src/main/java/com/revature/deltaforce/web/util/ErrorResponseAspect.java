@@ -2,6 +2,8 @@ package com.revature.deltaforce.web.util;
 
 import com.revature.deltaforce.util.exceptions.*;
 import com.revature.deltaforce.web.dtos.ErrorResponse;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -28,9 +30,13 @@ public class ErrorResponseAspect {
         return new ErrorResponse(400, e.getMessage());
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({
+            AuthenticationException.class,
+            SignatureException.class,
+            MalformedJwtException.class
+    })
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse handleAuthenticationException(AuthenticationException e) {
+    public ErrorResponse handleAuthenticationException(Exception e) {
         return new ErrorResponse(401, e.getMessage());
     }
 
