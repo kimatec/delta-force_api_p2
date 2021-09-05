@@ -18,15 +18,19 @@ import javax.validation.Valid;
 public class RegistrationController {
 
     UserService userService;
+    private final TokenGenerator tokenGenerator;
+
 
     @Autowired
-    public RegistrationController(UserService userService) {
+    public RegistrationController(UserService userService, TokenGenerator tokenGenerator) {
         this.userService = userService;
+        this.tokenGenerator = tokenGenerator;
     }
 
     @PostMapping(consumes = "application/json", produces = "application/json")
     public Principal registerNewUser(@RequestBody @Valid AppUser newUser, HttpServletResponse resp) {
         Principal principal = new Principal(userService.registerNewUser(newUser));
+        resp.setHeader(tokenGenerator.getJwtHeader(), tokenGenerator.createToken(principal));
         return principal;
     }
 

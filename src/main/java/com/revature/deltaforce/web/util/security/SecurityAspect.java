@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Aspect
@@ -26,7 +27,7 @@ import java.util.Optional;
 public class SecurityAspect {
 
     private final Logger logger = LoggerFactory.getLogger(SecurityAspect.class);
-    private JwtConfig jwtConfig;
+    private final JwtConfig jwtConfig;
 
     @Autowired
     public SecurityAspect(JwtConfig jwtConfig) {
@@ -44,12 +45,22 @@ public class SecurityAspect {
         );
 
 
-        HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpServletRequest req = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+
+        // TODO: Find out why this is an UndeclaredThrowableException when key is null or invalid
 
         Principal principal = parseToken(req)
                 .orElseThrow(() ->
                 new AuthenticationException("Request originates from an unauthenticated source.")
         );
+
+        // Allowed Roles is empty when all roles are permitted
+        if (!allowedRoles.isEmpty()) {
+            // TODO: Implement user/admin roles.
+            // if the user's role is not listed, throw exception
+            //if(!allowedRoles.contains(principal.getRole()))
+            throw new AuthenticationException("A forbidden request was made by: " + principal.getUsername());
+        }
 
         return pjp.proceed();
     }
