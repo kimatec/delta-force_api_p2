@@ -1,9 +1,11 @@
 package com.revature.deltaforce.services;
 
+import com.revature.deltaforce.datasources.models.Comment;
 import com.revature.deltaforce.datasources.models.DeltaArticle;
 import com.revature.deltaforce.datasources.models.ExternalAPIArticle;
 import com.revature.deltaforce.datasources.repositories.ArticleRepository;
 import com.revature.deltaforce.util.exceptions.ExternalDataSourceException;
+import com.revature.deltaforce.util.exceptions.InvalidRequestException;
 import com.revature.deltaforce.web.dtos.Source;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 public class ArticleServiceTestSuite {
 
@@ -56,6 +58,38 @@ public class ArticleServiceTestSuite {
         ExternalDataSourceException e = assertThrows(ExternalDataSourceException.class, () -> sut.newsResponseHandler(invalidRespList));
 
         // Assert
+
+    }
+
+    @Test
+    public void addComment_returnsCommentedArticle_whenValidCommentProvided(){
+        // Arrange
+        DeltaArticle validArticle = new DeltaArticle();
+        Comment validComment = new Comment("validUsername","validComment");
+        DeltaArticle expectedResult = new DeltaArticle();
+        expectedResult.addComment(validComment);
+        when(mockArticleRepo.save(validArticle)).thenReturn(expectedResult);
+
+        // Act
+        DeltaArticle actualResult = sut.addComment(validComment,validArticle);
+
+        // Assert
+        assertEquals(actualResult, expectedResult);
+        verify(mockArticleRepo,times(1)).save(validArticle);
+
+    }
+
+    @Test
+    public void addComment_throwsException_whenInvalidCommentProvided(){
+        // Arrange
+        DeltaArticle validArticle = new DeltaArticle();
+        Comment invalidComment = new Comment("username","");
+
+        // Act
+        InvalidRequestException e = assertThrows(InvalidRequestException.class, () -> sut.addComment(invalidComment,validArticle));
+
+        // Assert
+        verify(mockArticleRepo,times(0)).save(validArticle);
 
     }
 
