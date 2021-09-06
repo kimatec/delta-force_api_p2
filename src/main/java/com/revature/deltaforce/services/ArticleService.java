@@ -56,6 +56,11 @@ public class ArticleService {
         return articleRepo.save(article);
     }
 
+    public DeltaArticle removeComment(Comment commentForRemoval, DeltaArticle article){
+        article.removeComment(commentForRemoval);
+        return articleRepo.save(article);
+    }
+
     // adds a username to the article's likes, removes username from dislikes if it is present
     public DeltaArticle addLike(String username, DeltaArticle likedArticle){
         likedArticle.getDislikes().remove(username);
