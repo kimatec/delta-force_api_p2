@@ -55,4 +55,29 @@ public class ArticleService {
 
         return articleRepo.save(article);
     }
+
+    // adds a username to the article's likes, removes username from dislikes if it is present
+    public DeltaArticle addLike(String username, DeltaArticle likedArticle){
+        likedArticle.getDislikes().remove(username);
+        likedArticle.getLikes().add(username);
+        return articleRepo.save(likedArticle);
+    }
+
+    // adds username to the article's dislikes, removes username from likes if it is present
+    public DeltaArticle addDislike(String username, DeltaArticle likedArticle){
+        likedArticle.getLikes().remove(username);
+        likedArticle.getDislikes().add(username);
+        return articleRepo.save(likedArticle);
+    }
+
+    public DeltaArticle removeLike(String username, DeltaArticle likedArticle){
+        likedArticle.getLikes().remove(username);
+        return articleRepo.save(likedArticle);
+    }
+
+    public DeltaArticle removeDislike(String username, DeltaArticle likedArticle){
+        likedArticle.getDislikes().remove(username);
+        return articleRepo.save(likedArticle);
+    }
+
 }
