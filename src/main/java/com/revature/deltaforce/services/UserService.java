@@ -62,6 +62,19 @@ public class UserService {
         return userRepo.save(newUser);
     }
 
+    public AppUserDTO findUserById(String id) {
+
+        if (id == null || id.trim().isEmpty()) {
+            throw new InvalidRequestException("Invalid id provided");
+        }
+
+        return userRepo.findById(id)
+                .map(AppUserDTO::new)
+                .orElseThrow(() -> new ResourceNotFoundException("No user found with provided Id."));
+
+
+    }
+
     public Set<String> addTopic (String id, String topic){
         AppUser authUser = userRepo.findAppUserById(id);
         HashSet<String> userFaves = authUser.getFavTopics();
@@ -88,17 +101,4 @@ public class UserService {
         return userFaves;
     }
 
-
-    public AppUserDTO findUserById(String id) {
-
-        if (id == null || id.trim().isEmpty()) {
-            throw new InvalidRequestException("Invalid id provided");
-        }
-
-        return userRepo.findById(id)
-                .map(AppUserDTO::new)
-                .orElseThrow(() -> new ResourceNotFoundException("No user found with provided Id."));
-
-
-    }
 }
