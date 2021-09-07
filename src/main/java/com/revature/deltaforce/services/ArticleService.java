@@ -7,6 +7,7 @@ import com.revature.deltaforce.datasources.models.NewsResponse;
 import com.revature.deltaforce.datasources.repositories.ArticleRepository;
 import com.revature.deltaforce.util.exceptions.ExternalDataSourceException;
 import com.revature.deltaforce.util.exceptions.InvalidRequestException;
+import org.assertj.core.util.diff.Delta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,8 +36,12 @@ public class ArticleService {
         List<DeltaArticle> deltaArticles = externalAPIArticles.stream()
                 .map(DeltaArticle::new).collect(Collectors.toList());
 
-        //TODO - check database for articles that exist
-        // only add articles to the database if/when they receive likes/dislikes/comments to prevent bloat
+        // TODO: There's gotta be a better way to do this, probably involving creating a query and using the
+        //  $or operator with an array of URLs.
+        deltaArticles.forEach(article -> {
+            DeltaArticle savedArticle = articleRepo.findDeltaArticleByUrl(article.getUrl());
+            if (savedArticle != null) deltaArticles.set(deltaArticles.indexOf(article), savedArticle);
+        });
 
         return deltaArticles;
     }
@@ -50,4 +55,34 @@ public class ArticleService {
 
         return articleRepo.save(article);
     }
+
+    public DeltaArticle removeComment(Comment commentForRemoval, DeltaArticle article){
+        article.removeComment(commentForRemoval);
+        return articleRepo.save(article);
+    }
+
+    // adds a username to the article's likes, removes username from dislikes if it is present
+    public DeltaArticle addLike(String username, DeltaArticle likedArticle){
+        likedArticle.getDislikes().remove(username);
+        likedArticle.getLikes().add(username);
+        return articleRepo.save(likedArticle);
+    }
+
+    // adds username to the article's dislikes, removes username from likes if it is present
+    public DeltaArticle addDislike(String username, DeltaArticle likedArticle){
+        likedArticle.getLikes().remove(username);
+        likedArticle.getDislikes().add(username);
+        return articleRepo.save(likedArticle);
+    }
+
+    public DeltaArticle removeLike(String username, DeltaArticle likedArticle){
+        likedArticle.getLikes().remove(username);
+        return articleRepo.save(likedArticle);
+    }
+
+    public DeltaArticle removeDislike(String username, DeltaArticle likedArticle){
+        likedArticle.getDislikes().remove(username);
+        return articleRepo.save(likedArticle);
+    }
+
 }

@@ -61,6 +61,7 @@ public class ArticleServiceTestSuite {
 
     }
 
+    // addComment Tests
     @Test
     public void addComment_returnsCommentedArticle_whenValidCommentProvided(){
         // Arrange
@@ -90,6 +91,23 @@ public class ArticleServiceTestSuite {
 
         // Assert
         verify(mockArticleRepo,times(0)).save(validArticle);
+
+    }
+
+    // removeComment Tests
+    @Test
+    public void removeComment_returnsUncommentedArticle_whenValidCommentProvided(){
+        // Arrange
+        DeltaArticle validArticle = new DeltaArticle();
+        Comment validComment = new Comment("validUsername","validComment");
+        validArticle.addComment(validComment);
+        when(mockArticleRepo.save(validArticle)).thenReturn(validArticle);
+
+        // Act
+        DeltaArticle actualResult = sut.removeComment(validComment,validArticle);
+        // Assert
+        assertEquals(actualResult, validArticle);
+        verify(mockArticleRepo,times(1)).save(validArticle);
 
     }
 
