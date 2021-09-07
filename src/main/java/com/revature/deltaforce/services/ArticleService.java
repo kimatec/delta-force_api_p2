@@ -7,6 +7,7 @@ import com.revature.deltaforce.datasources.models.NewsResponse;
 import com.revature.deltaforce.datasources.repositories.ArticleRepository;
 import com.revature.deltaforce.util.exceptions.ExternalDataSourceException;
 import com.revature.deltaforce.util.exceptions.InvalidRequestException;
+import com.revature.deltaforce.web.dtos.CommentDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.diff.Delta;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,14 +45,14 @@ public class ArticleService {
         }
 
 
-    public DeltaArticle addComment(Comment newComment, DeltaArticle article){
-
-        if(newComment.getContent().trim().equals("")||newComment.getContent()==null)
+    public DeltaArticle addComment(CommentDTO newComment){
+        DeltaArticle deltaArticle = newComment.getDeltaArticle();
+        if(deltaArticle.getContent().trim().equals("")||deltaArticle.getContent()==null)
             throw new InvalidRequestException("Comments cannot be empty!");
 
-        article.addComment(newComment);
+        deltaArticle.addComment(newComment.getComment());
 
-        return articleRepo.save(article);
+        return articleRepo.save(deltaArticle);
     }
 
     public DeltaArticle removeComment(Comment commentForRemoval, DeltaArticle article){
