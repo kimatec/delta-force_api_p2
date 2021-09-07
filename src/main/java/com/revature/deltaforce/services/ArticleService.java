@@ -7,10 +7,12 @@ import com.revature.deltaforce.datasources.models.NewsResponse;
 import com.revature.deltaforce.datasources.repositories.ArticleRepository;
 import com.revature.deltaforce.util.exceptions.ExternalDataSourceException;
 import com.revature.deltaforce.util.exceptions.InvalidRequestException;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.diff.Delta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,18 +35,14 @@ public class ArticleService {
             throw new ExternalDataSourceException("Bad Response: No articles received");
         }
 
-        List<DeltaArticle> deltaArticles = externalAPIArticles.stream()
-                .map(DeltaArticle::new).collect(Collectors.toList());
+        List<URL> deltaArticleUrls = externalAPIArticles.stream()
+                .map(DeltaArticle::new)
+                .map(article -> article.getUrl())
+                .collect(Collectors.toList());
 
-        // TODO: There's gotta be a better way to do this, probably involving creating a query and using the
-        //  $or operator with an array of URLs.
-        deltaArticles.forEach(article -> {
-            DeltaArticle savedArticle = articleRepo.findDeltaArticleByUrl(article.getUrl());
-            if (savedArticle != null) deltaArticles.set(deltaArticles.indexOf(article), savedArticle);
-        });
+       return articleRepo.findDeltaArticleByUrl(deltaArticleUrls);
+        }
 
-        return deltaArticles;
-    }
 
     public DeltaArticle addComment(Comment newComment, DeltaArticle article){
 
