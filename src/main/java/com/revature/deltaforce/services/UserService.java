@@ -101,4 +101,43 @@ public class UserService {
         return userFaves;
     }
 
+    /**
+     * Takes in an AppUser with edited values, updates values if they are changed and valid.
+     * Assumes fields are populated with original data in UI layer. If an invalid/empty value is set, it will not reach this point
+     * due to the @Value field in the controller
+     * //TODO Create controller, include @Valid at the controller level
+     * Note: Might just be able to add existing Id to newValues when it is sent in and bypass the need for principal.
+     * */
+    public AppUserDTO updateUserInfo(Principal user, AppUser newValues){
+        // Get original values
+        AppUser userToModify = userRepo.findAppUserById(user.getId());
+
+        // If the username has changed, check that the new username is not taken
+        String newUsername = newValues.getUsername();
+        if(!newUsername.equals(userToModify.getUsername()))
+            if(isUsernameTaken(newUsername)){
+                throw new ResourcePersistenceException("This username is already taken!");
+            }
+        // If the Email has changed, check that the new email is not taken
+        String newEmail = newValues.getEmail();
+        if(!newEmail.equals(userToModify.getEmail()))
+            if(isEmailTaken(newEmail)){
+                throw new ResourcePersistenceException("This email is already taken!");
+            }
+        String newPassword = passwordUtils.generateSecurePassword(newValues.getPassword());
+        newValues.setPassword(newPassword);
+        newValues.setId(userToModify.getId());
+
+        return new AppUserDTO(userRepo.save(newValues));
+    }
+
+
+    public boolean isUsernameTaken(String newUsername){
+        return userRepo.findAppUserByUsername(newUsername) != null;
+    }
+
+    public boolean isEmailTaken(String email){
+        return userRepo.findAppUserByEmail(email) != null;
+    }
+
 }
