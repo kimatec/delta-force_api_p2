@@ -4,12 +4,15 @@ import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.datasources.repositories.UserRepository;
 import com.revature.deltaforce.util.PasswordUtils;
 import com.revature.deltaforce.util.exceptions.AuthenticationException;
+import com.revature.deltaforce.util.exceptions.InvalidRequestException;
 import com.revature.deltaforce.util.exceptions.ResourcePersistenceException;
+import com.revature.deltaforce.web.dtos.AppUserDTO;
 import com.revature.deltaforce.web.dtos.Principal;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static com.sun.xml.internal.ws.policy.sourcemodel.wspolicy.XmlToken.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -127,4 +130,55 @@ public class UserServiceTestSuite {
         verify(mockUserRepo, times(0)).save(duplicate);
 
     }
+
+    // addTopic Tests
+    @Test
+    public void addTopic_returnsSuccessfully_whenProvided_newTopic(){
+
+    }
+
+    @Test
+    public void addTopic_throwsException_whenProvided_existingTopic(){
+
+    }
+
+    // removeTopic Tests
+    @Test
+    public void removeTopic_returnsSuccessfully_whenProvided_existingTopic(){
+
+    }
+
+    @Test
+    public void removeTopic_throwsException_whenProvided_nonexistentTopic(){
+
+    }
+
+    // findUserById Tests
+    @Test
+    public void findUserById_returnsAppUserDTO_whenProvided_validId(){
+        // Arrange
+        String validId = "some-valid-id";
+        AppUser expectedUser = new AppUser();
+        expectedUser.setId(validId);
+        when(mockUserRepo.findById(validId)).thenReturn(java.util.Optional.of(expectedUser));
+
+        // Act
+        AppUserDTO actualResult = sut.findUserById(validId);
+
+        // Assert
+        assertEquals(actualResult.getId(),expectedUser.getId());
+    }
+
+    @Test
+    public void findUserById_throwsInvalidRequestException_whenProvided_invalidId(){
+        // Arrange
+        String invalidId = "";
+
+        // Act
+        InvalidRequestException e = assertThrows(InvalidRequestException.class,() -> sut.findUserById(invalidId));
+
+        // Assert
+        verify(mockUserRepo,times(0)).findById(invalidId);
+    }
+
 }

@@ -1,10 +1,9 @@
 package com.revature.deltaforce.web.util;
 
-import com.revature.deltaforce.util.exceptions.AuthenticationException;
-import com.revature.deltaforce.util.exceptions.InvalidRequestException;
-import com.revature.deltaforce.util.exceptions.ResourceNotFoundException;
-import com.revature.deltaforce.util.exceptions.ResourcePersistenceException;
+import com.revature.deltaforce.util.exceptions.*;
 import com.revature.deltaforce.web.dtos.ErrorResponse;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -31,15 +30,22 @@ public class ErrorResponseAspect {
         return new ErrorResponse(400, e.getMessage());
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({
+            AuthenticationException.class,
+            SignatureException.class,
+            MalformedJwtException.class
+    })
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse handleAuthenticationException(AuthenticationException e) {
+    public ErrorResponse handleAuthenticationException(Exception e) {
         return new ErrorResponse(401, e.getMessage());
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({
+            ResourceNotFoundException.class,
+            ExternalDataSourceException.class
+    })
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException e) {
+    public ErrorResponse handleResourceNotFoundException(Exception e) {
         return new ErrorResponse(404, e.getMessage());
     }
 

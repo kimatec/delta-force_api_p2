@@ -20,6 +20,7 @@ public class RegistrationController {
     UserService userService;
     private final TokenGenerator tokenGenerator;
 
+
     @Autowired
     public RegistrationController(UserService userService, TokenGenerator tokenGenerator) {
         this.userService = userService;
