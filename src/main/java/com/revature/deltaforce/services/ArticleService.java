@@ -2,12 +2,14 @@ package com.revature.deltaforce.services;
 
 
 
+import com.revature.deltaforce.datasources.models.Comment;
 import com.revature.deltaforce.datasources.models.DeltaArticle;
 import com.revature.deltaforce.datasources.models.ExternalAPIArticle;
 
 import com.revature.deltaforce.datasources.repositories.ArticleRepository;
 import com.revature.deltaforce.util.exceptions.ExternalDataSourceException;
 import com.revature.deltaforce.util.exceptions.InvalidRequestException;
+import com.revature.deltaforce.util.exceptions.ResourceNotFoundException;
 import com.revature.deltaforce.web.dtos.CommentDTO;
 
 
@@ -31,7 +33,9 @@ public class ArticleService {
         this.articleRepo = articleRepo;
     }
 
-    // For handling incoming search response
+//    Takes in a list of articles, saves all articles that are not already saved to our api database,
+//    then returns the initial list of articles.
+
     public List<DeltaArticle> newsResponseHandler(List<ExternalAPIArticle> externalAPIArticles){
 
         if(externalAPIArticles.isEmpty())
@@ -58,20 +62,24 @@ public class ArticleService {
         }
 
 
-    public DeltaArticle addComment(CommentDTO newComment){
-        DeltaArticle deltaArticle = newComment.getDeltaArticle();
+    //Finds article by ID, adds comment to article, saves the article, then returns the updated article
+    public DeltaArticle addComment(Comment comment, String articleId){
+        DeltaArticle deltaArticle = articleRepo.findArticleById(articleId);
         if(deltaArticle.getContent().trim().equals("")||deltaArticle.getContent()==null)
             throw new InvalidRequestException("Comments cannot be empty!");
 
-        deltaArticle.addComment(newComment.getComment());
-
-        return articleRepo.save(deltaArticle);
+        deltaArticle.addComment(comment);
+        articleRepo.save(deltaArticle);
+        return deltaArticle;
     }
 
-    public DeltaArticle removeComment(CommentDTO commentForRemoval){
-        DeltaArticle article = commentForRemoval.getDeltaArticle();
-        article.removeComment(commentForRemoval.getComment());
-        return articleRepo.save(article);
+    public DeltaArticle removeComment(Comment comment, String articleId){
+        DeltaArticle deltaArticle = articleRepo.findArticleById(articleId);
+        if(!deltaArticle.getComments().contains(comment))
+            throw new ResourceNotFoundException("Comment not found.");
+        deltaArticle.removeComment(comment);
+        articleRepo.save(deltaArticle);
+        return deltaArticle;
     }
 
     // adds a username to the article's likes, removes username from dislikes if it is present

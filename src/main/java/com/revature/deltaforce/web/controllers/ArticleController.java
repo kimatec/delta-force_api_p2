@@ -8,6 +8,7 @@ import com.revature.deltaforce.web.dtos.CommentDTO;
 import com.revature.deltaforce.web.util.security.Secured;
 import com.revature.deltaforce.web.util.security.SecurityAspect;
 import com.revature.deltaforce.web.util.security.UserVerified;
+import org.assertj.core.util.diff.Delta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -32,18 +33,18 @@ public class ArticleController {
         this.restClient = restClient;
     }
 
-    @PostMapping(value = "/comment", consumes = "application/json", produces = "application/json")
+    @PostMapping(
+            value = "/comment",
+            params = {"id"},
+            consumes = "application/json",
+            produces = "application/json")
     @Secured(allowedRoles = {})
-    public DeltaArticle addComment(@RequestBody CommentDTO commentDTO){ return articleService.addComment(commentDTO);}
+    public DeltaArticle addComment(@RequestBody Comment comment, @RequestParam("id") String articleId){ return articleService.addComment(comment, articleId);}
 
-//    @DeleteMapping(value = "/comment", consumes = "application/json", produces = "application/json")
-//    public String removeComment(@RequestBody CommentDTO commentDTO) {
-//
-//        if(!commentDTO.getComment().getUsername().equals(username))
-//            throw new AuthorizationException("You can't delete a comment you didn't write!");
-//        articleService.removeComment(commentDTO);
-//        return "Comment removed successfully.";
-//    }
+
+    @DeleteMapping(value = "/comment", consumes = "application/json", produces = "application/json")
+    @Secured(allowedRoles = {})
+    public DeltaArticle removeComment(@RequestBody Comment comment, @RequestParam("id") String articleId) {return articleService.removeComment(comment, articleId);}
 
 
 }

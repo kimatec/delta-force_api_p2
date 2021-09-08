@@ -1,5 +1,6 @@
 package com.revature.deltaforce.web.util.security;
 
+import com.revature.deltaforce.datasources.models.Comment;
 import com.revature.deltaforce.util.exceptions.AuthenticationException;
 import com.revature.deltaforce.web.dtos.Principal;
 import io.jsonwebtoken.Claims;
@@ -58,8 +59,16 @@ public class SecurityAspect {
             throw new AuthenticationException("A forbidden request was made by: " + principal.getUsername());
         }
 
+        if (pjp.getArgs()[0] instanceof Comment) {
+            if (!principal.getUsername().equals(((Comment)pjp.getArgs()[0]).getUsername()))
+            {
+                throw new AuthenticationException("You can only delete comments that you wrote!");
+            }
+        }
+
         return pjp.proceed();
     }
+
 
 
     public Optional<Principal> parseToken(HttpServletRequest req) {
