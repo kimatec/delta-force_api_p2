@@ -44,7 +44,6 @@ public class SecurityAspect {
 
         HttpServletRequest req = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
 
-        // TODO: Find out why this is an UndeclaredThrowableException when key is null or invalid
 
         Principal principal = parseToken(req)
                 .orElseThrow(() ->
@@ -58,6 +57,17 @@ public class SecurityAspect {
             //if(!allowedRoles.contains(principal.getRole()))
             throw new AuthenticationException("A forbidden request was made by: " + principal.getUsername());
         }
+        return pjp.proceed();
+    }
+
+    @Around("@annotation(com.revature.deltaforce.web.util.security.IsMine)")
+    public Object isItMine(ProceedingJoinPoint pjp) throws Throwable{
+        HttpServletRequest req = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+
+        Principal principal = parseToken(req)
+                .orElseThrow(() ->
+                        new AuthenticationException("Request originates from an unauthenticated source.")
+                );
 
         if (pjp.getArgs()[0] instanceof Comment) {
             if (!principal.getUsername().equals(((Comment)pjp.getArgs()[0]).getUsername()))
@@ -65,11 +75,8 @@ public class SecurityAspect {
                 throw new AuthenticationException("You can only delete comments that you wrote!");
             }
         }
-
         return pjp.proceed();
     }
-
-
 
     public Optional<Principal> parseToken(HttpServletRequest req) {
         try {

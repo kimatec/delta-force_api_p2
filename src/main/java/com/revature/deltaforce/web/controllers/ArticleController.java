@@ -3,19 +3,12 @@ package com.revature.deltaforce.web.controllers;
 import com.revature.deltaforce.datasources.models.Comment;
 import com.revature.deltaforce.datasources.models.DeltaArticle;
 import com.revature.deltaforce.services.ArticleService;
-import com.revature.deltaforce.util.exceptions.AuthorizationException;
-import com.revature.deltaforce.web.dtos.CommentDTO;
+import com.revature.deltaforce.web.util.security.IsMine;
 import com.revature.deltaforce.web.util.security.Secured;
-import com.revature.deltaforce.web.util.security.SecurityAspect;
-import com.revature.deltaforce.web.util.security.UserVerified;
-import org.assertj.core.util.diff.Delta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/article")
@@ -44,6 +37,7 @@ public class ArticleController {
 
     @DeleteMapping(value = "/comment", consumes = "application/json", produces = "application/json")
     @Secured(allowedRoles = {})
+    @IsMine
     public DeltaArticle removeComment(@RequestBody Comment comment, @RequestParam("id") String articleId) {return articleService.removeComment(comment, articleId);}
 
 
