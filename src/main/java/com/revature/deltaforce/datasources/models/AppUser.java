@@ -30,9 +30,11 @@ public class AppUser {
     @NotBlank(message = "Password can not be null or blank")
     private String password;
 
+    private String role = "User";
+
     private HashSet<String> favTopics = new HashSet<>();
 
-
+    // For registering a new user
     public AppUser(String firstName, String lastName, String email, String username, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -45,5 +47,15 @@ public class AppUser {
     public AppUser(String firstName, String lastName, String email, String username, String password, HashSet<String> favTopics) {
         this(firstName, lastName, email, username, password);
         this.favTopics = favTopics;
+    }
+
+    // For registering an admin user
+    public AppUser(String firstName, String lastName, String email, String username, String password, String role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.role = "Admin";
     }
 }

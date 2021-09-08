@@ -7,7 +7,6 @@ import com.revature.deltaforce.web.util.security.TokenGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @RestController
@@ -27,23 +26,23 @@ public class UserController {
     }
 
     // Not sure if I like the way I implemented these, will probably make a UserFavesDTO later instead - cody
-    // user/faves?id=23i4on3ad4sd3fi3oj&add=eggs
+    // user/23i4on3ad4sd3fi3oj/faves?add=eggs
     @PostMapping(
-            value = "/faves",
-            params = {"id", "add"},
+            value = "{id}/faves",
+            params = {"add"},
             produces = "application/json")
     @Secured(allowedRoles={})
-    public Set<String> addToFavesById(@RequestParam("id") String id, @RequestParam("add") String topic){
+    public Set<String> addToFavesById(@PathVariable("id") String id, @RequestParam("add") String topic){
         return userService.addTopic(id, topic);
     }
 
-    // user/faves?id=23i4on3ad4sd3fi3oj&remove=lost%20socks
+    // user/23i4on3ad4sd3fi3oj/faves?remove=lost%20socks
     @DeleteMapping(
-            value = "/faves",
-            params = {"id", "remove"},
+            value = "{id}/faves",
+            params = {"remove"},
             produces = "application/json")
     @Secured(allowedRoles={})
-    public Set<String> removeFromFavesById(@RequestParam("id") String id, @RequestParam("remove") String topic){
+    public Set<String> removeFromFavesById(@PathVariable("id") String id, @RequestParam("add") String topic){
         return userService.removeTopic(id, topic);
     }
 
