@@ -1,26 +1,29 @@
 package com.revature.deltaforce.services;
 
-import com.revature.deltaforce.datasources.models.Comment;
+
+
 import com.revature.deltaforce.datasources.models.DeltaArticle;
 import com.revature.deltaforce.datasources.models.ExternalAPIArticle;
-import com.revature.deltaforce.datasources.models.NewsResponse;
+
 import com.revature.deltaforce.datasources.repositories.ArticleRepository;
 import com.revature.deltaforce.util.exceptions.ExternalDataSourceException;
 import com.revature.deltaforce.util.exceptions.InvalidRequestException;
 import com.revature.deltaforce.web.dtos.CommentDTO;
-import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.util.diff.Delta;
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class ArticleService {
-
+    Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ArticleRepository articleRepo;
 
     @Autowired
@@ -35,13 +38,23 @@ public class ArticleService {
         {
             throw new ExternalDataSourceException("Bad Response: No articles received");
         }
+        List<DeltaArticle> requestedArticles = externalAPIArticles.stream()
+                                                            .map(DeltaArticle::new)
+                                                            .collect(Collectors.toList());
 
-        List<URL> deltaArticleUrls = externalAPIArticles.stream()
-                .map(DeltaArticle::new)
-                .map(article -> article.getUrl())
-                .collect(Collectors.toList());
+        List<URL> deltaArticleUrls= externalAPIArticles.stream()
+                                                        .map(DeltaArticle::new)
+                                                        .map(article -> article.getUrl())
+                                                        .collect(Collectors.toList());
+        List<DeltaArticle> existingArticles = articleRepo.findDeltaArticleByUrl(deltaArticleUrls);
+        logger.error("NUMBER OF EXISTING ARTICLES: " + existingArticles.size());
+        List<DeltaArticle> filteredArticles = requestedArticles.stream()
+                                                            .filter(article -> !existingArticles.contains(article))
+                                                            .collect(Collectors.toList());
+        logger.error("NUMBER OF FILTERED ARTICLES: " + filteredArticles.size());
+        articleRepo.saveAll(filteredArticles);
 
-       return articleRepo.findDeltaArticleByUrl(deltaArticleUrls);
+        return requestedArticles;
         }
 
 
@@ -55,8 +68,9 @@ public class ArticleService {
         return articleRepo.save(deltaArticle);
     }
 
-    public DeltaArticle removeComment(Comment commentForRemoval, DeltaArticle article){
-        article.removeComment(commentForRemoval);
+    public DeltaArticle removeComment(CommentDTO commentForRemoval){
+        DeltaArticle article = commentForRemoval.getDeltaArticle();
+        article.removeComment(commentForRemoval.getComment());
         return articleRepo.save(article);
     }
 
