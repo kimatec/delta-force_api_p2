@@ -7,7 +7,7 @@ import com.revature.deltaforce.web.dtos.edituser.EditUserEmailDTO;
 import com.revature.deltaforce.web.dtos.edituser.EditUserInfoDTO;
 import com.revature.deltaforce.web.dtos.edituser.EditUserPasswordDTO;
 import com.revature.deltaforce.web.dtos.Principal;
-import com.revature.deltaforce.web.dtos.edituser.EditUserUsernameDTO;
+import com.revature.deltaforce.web.dtos.edituser.EditUsernameDTO;
 import com.revature.deltaforce.web.util.security.Secured;
 import com.revature.deltaforce.web.util.security.TokenGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,22 +54,26 @@ public class UserController {
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
-    public AppUserDTO editUserPassword(@RequestBody @Valid EditUserPasswordDTO editedUser){
-        return null;
+    public Principal editUserPassword(@RequestBody @Valid EditUserPasswordDTO editedUser, HttpServletResponse resp){
+        Principal principal = new Principal(userService.updateUserPassword(editedUser));
+        resp.setHeader(tokenGenerator.getJwtHeader(), tokenGenerator.createToken(principal));
+        return principal;
     }
 
-    // Edit user
+    // Edit username
     // ex: PUT /edit/username
     @PutMapping(
             value="/edit/username",
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
-    public AppUserDTO editUserUsername(@RequestBody @Valid EditUserUsernameDTO editedUser){
-        return null;
+    public Principal editUsername(@RequestBody @Valid EditUsernameDTO editedUser, HttpServletResponse resp){
+        Principal principal = new Principal(userService.updateUsername(editedUser));
+        resp.setHeader(tokenGenerator.getJwtHeader(), tokenGenerator.createToken(principal));
+        return principal;
     }
 
-    // Edit user
+    // Edit user email
     // ex: PUT /edit/email
     @PutMapping(
             value="/edit/email",
@@ -77,10 +81,10 @@ public class UserController {
             produces = "application/json")
     @Secured(allowedRoles = {})
     public AppUserDTO editUserEmail(@RequestBody @Valid EditUserEmailDTO editedUser){
-        return null;
+        return AppUserDTO(userService.updateUserEmail(editedUser));
     }
 
-    // Edit user
+    // Edit user info - currently first name and last name
     // ex: PUT /edit/names
     @PutMapping(
             value="/edit/names",
@@ -88,7 +92,7 @@ public class UserController {
             produces = "application/json")
     @Secured(allowedRoles = {})
     public AppUserDTO editUserInfo(@RequestBody @Valid EditUserInfoDTO editedUser){
-        return null;
+        return AppUserDTO(userService.updateUserInfo(editedUser));
     }
 
 
