@@ -3,8 +3,11 @@ package com.revature.deltaforce.web.controllers;
 import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.services.UserService;
 import com.revature.deltaforce.web.dtos.AppUserDTO;
-import com.revature.deltaforce.web.dtos.EditUserDTO;
+import com.revature.deltaforce.web.dtos.edituser.EditUserEmailDTO;
+import com.revature.deltaforce.web.dtos.edituser.EditUserInfoDTO;
+import com.revature.deltaforce.web.dtos.edituser.EditUserPasswordDTO;
 import com.revature.deltaforce.web.dtos.Principal;
+import com.revature.deltaforce.web.dtos.edituser.EditUserUsernameDTO;
 import com.revature.deltaforce.web.util.security.Secured;
 import com.revature.deltaforce.web.util.security.TokenGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,17 +47,51 @@ public class UserController {
     }
 
 
-    // Edit user using EditUserDTO, returns new Principal?
-    // I want to go over this one before I do any implementation.
-    // ex: PUT
+    // Edit user password using EditUserPasswordDTO
+    // ex: PUT /edit/password
     @PutMapping(
-            value="/edit",
+            value="/edit/password",
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
-    public AppUserDTO editUser(@RequestBody @Valid EditUserDTO editedUser){
+    public AppUserDTO editUserPassword(@RequestBody @Valid EditUserPasswordDTO editedUser){
         return null;
     }
+
+    // Edit user
+    // ex: PUT /edit/username
+    @PutMapping(
+            value="/edit/username",
+            consumes = "application/json",
+            produces = "application/json")
+    @Secured(allowedRoles = {})
+    public AppUserDTO editUserUsername(@RequestBody @Valid EditUserUsernameDTO editedUser){
+        return null;
+    }
+
+    // Edit user
+    // ex: PUT /edit/email
+    @PutMapping(
+            value="/edit/email",
+            consumes = "application/json",
+            produces = "application/json")
+    @Secured(allowedRoles = {})
+    public AppUserDTO editUserEmail(@RequestBody @Valid EditUserEmailDTO editedUser){
+        return null;
+    }
+
+    // Edit user
+    // ex: PUT /edit/names
+    @PutMapping(
+            value="/edit/names",
+            consumes = "application/json",
+            produces = "application/json")
+    @Secured(allowedRoles = {})
+    public AppUserDTO editUserInfo(@RequestBody @Valid EditUserInfoDTO editedUser){
+        return null;
+    }
+
+
 
     // Delete User (admin only)
     @Secured(allowedRoles = {"admin"})
