@@ -10,6 +10,10 @@ import com.revature.deltaforce.util.exceptions.ResourceNotFoundException;
 import com.revature.deltaforce.util.exceptions.ResourcePersistenceException;
 import com.revature.deltaforce.web.dtos.AppUserDTO;
 import com.revature.deltaforce.web.dtos.Principal;
+import com.revature.deltaforce.web.dtos.edituser.EditUserEmailDTO;
+import com.revature.deltaforce.web.dtos.edituser.EditUserInfoDTO;
+import com.revature.deltaforce.web.dtos.edituser.EditUserPasswordDTO;
+import com.revature.deltaforce.web.dtos.edituser.EditUsernameDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -113,6 +117,83 @@ public class UserService {
         return userFaves;
     }
 
+    // Methods to edit a user's information
+    public AppUser updateUsername(EditUsernameDTO editedUser) {
+        // Check if the new username is available
+        if(isUsernameTaken(editedUser.getNewUsername()))
+            throw new ResourcePersistenceException("This username is already taken!");
+
+        // Retrieve original values
+        AppUser updatedUser = userRepo.findAppUserById(editedUser.getId());
+
+        // Verify password
+        String encryptedPass = passwordUtils.generateSecurePassword(editedUser.getPassword());
+        if(!encryptedPass.equals(updatedUser.getPassword()))
+            throw new AuthenticationException("Invalid password provided!");
+
+        // Update username
+        updatedUser.setUsername(editedUser.getNewUsername());
+
+        // Save and return updated user
+        return userRepo.save(updatedUser);
+    }
+
+    public AppUser updateUserPassword(EditUserPasswordDTO editedUser) {
+        // Retrieve original values
+        AppUser updatedUser = userRepo.findAppUserById(editedUser.getId());
+
+        // Verify password
+        String encryptedPass = passwordUtils.generateSecurePassword(editedUser.getPassword());
+        if(!encryptedPass.equals(updatedUser.getPassword()))
+            throw new AuthenticationException("Invalid password provided!");
+
+        // Encrypt new password
+        String newEncryptedPass = passwordUtils.generateSecurePassword(editedUser.getNewPassword());
+
+        // Update password
+        updatedUser.setPassword(newEncryptedPass);
+
+        // Save and return updated user
+        return userRepo.save(updatedUser);
+    }
+
+    public AppUser updateUserEmail(EditUserEmailDTO editedUser) {
+        // Check if the new email is available
+        if(isEmailTaken(editedUser.getNewEmail()))
+            throw new ResourcePersistenceException("This email is already taken!");
+
+        // Retrieve original values
+        AppUser updatedUser = userRepo.findAppUserById(editedUser.getId());
+
+        // Verify password
+        String encryptedPass = passwordUtils.generateSecurePassword(editedUser.getPassword());
+        if(!encryptedPass.equals(updatedUser.getPassword()))
+            throw new AuthenticationException("Invalid password provided!");
+
+        // Update username
+        updatedUser.setEmail(editedUser.getNewEmail());
+
+        // Save and return updated user
+        return userRepo.save(updatedUser);
+    }
+
+    public AppUser updateUserInfo(EditUserInfoDTO editedUser) {
+        // Retrieve original values
+        AppUser updatedUser = userRepo.findAppUserById(editedUser.getId());
+
+        // Verify password
+        String encryptedPass = passwordUtils.generateSecurePassword(editedUser.getPassword());
+        if(!encryptedPass.equals(updatedUser.getPassword()))
+            throw new AuthenticationException("Invalid password provided!");
+
+        // Update fields
+        updatedUser.setFirstName(editedUser.getNewFirstName());
+        updatedUser.setLastName(editedUser.getNewLastName());
+
+        // Save and return updated user
+        return userRepo.save(updatedUser);
+    }
+
     // Deletes a user by their username - admin only operation.
     public void deleteUserByUsername(String username) {
         AppUser userToDelete = userRepo.findAppUserByUsername(username);
@@ -123,4 +204,5 @@ public class UserService {
         //  ...or set all the user's entries to "DELETED_USER"
         //  and comments to "This user's comments have been removed."
     }
+
 }

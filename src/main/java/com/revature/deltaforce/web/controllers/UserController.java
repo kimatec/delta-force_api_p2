@@ -47,7 +47,7 @@ public class UserController {
     }
 
 
-    // Edit user password using EditUserPasswordDTO
+    // Edit user password, returns new principal and updates JWT
     // ex: PUT /edit/password
     @PutMapping(
             value="/edit/password",
@@ -60,7 +60,7 @@ public class UserController {
         return principal;
     }
 
-    // Edit username
+    // Edit username, returns new principal and updates JWT
     // ex: PUT /edit/username
     @PutMapping(
             value="/edit/username",
@@ -81,18 +81,18 @@ public class UserController {
             produces = "application/json")
     @Secured(allowedRoles = {})
     public AppUserDTO editUserEmail(@RequestBody @Valid EditUserEmailDTO editedUser){
-        return AppUserDTO(userService.updateUserEmail(editedUser));
+        return new AppUserDTO(userService.updateUserEmail(editedUser));
     }
 
     // Edit user info - currently first name and last name
     // ex: PUT /edit/names
     @PutMapping(
-            value="/edit/names",
+            value="/edit/userinfo",
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
     public AppUserDTO editUserInfo(@RequestBody @Valid EditUserInfoDTO editedUser){
-        return AppUserDTO(userService.updateUserInfo(editedUser));
+        return new AppUserDTO(userService.updateUserInfo(editedUser));
     }
 
 
