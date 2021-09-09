@@ -33,9 +33,12 @@ public class ArticleService {
         this.articleRepo = articleRepo;
     }
 
-//    Takes in a list of articles, saves all articles that are not already saved to our api database,
-//    then returns the initial list of articles.
-
+    /**
+     * Takes in a list of articles, saves all articles that are not already saved to our api database,
+     * then returns the initial list of articles.
+     * @param externalAPIArticles A list of articles extracted from News API
+     * @return
+     */
     public List<DeltaArticle> newsResponseHandler(List<ExternalAPIArticle> externalAPIArticles){
 
         if(externalAPIArticles.isEmpty())
@@ -62,7 +65,12 @@ public class ArticleService {
         }
 
 
-    //Finds article by ID, adds comment to article, saves the article, then returns the updated article
+    /**
+     * Adds comment to article given by articleId, then returns the updated article
+     * @param comment The comment to be added
+     * @param articleId The id of the article in which the comment will be added
+     * @return
+     */
     public DeltaArticle addComment(Comment comment, String articleId){
         DeltaArticle deltaArticle = articleRepo.findArticleById(articleId);
         if(deltaArticle.getContent().trim().equals("")||deltaArticle.getContent()==null)
@@ -73,6 +81,12 @@ public class ArticleService {
         return deltaArticle;
     }
 
+    /**
+     * Removes comment from article given by articleId, then returns the updated article
+     * @param comment The comment to be removed
+     * @param articleId The id of the article in which the comment will be removed
+     * @return
+     */
     public DeltaArticle removeComment(Comment comment, String articleId){
         DeltaArticle deltaArticle = articleRepo.findArticleById(articleId);
         if(!deltaArticle.getComments().contains(comment))
@@ -82,7 +96,12 @@ public class ArticleService {
         return deltaArticle;
     }
 
-    // adds a username to the article's likes, removes username from dislikes if it is present
+    /**
+     * Adds a username to the article's likes, removes username from dislikes if it is present
+     * @param username The username of the user liking the article
+     * @param articleId The id of the article that's being liked
+     * @return
+     */
     public DeltaArticle addLike(String username, String articleId){
         DeltaArticle deltaArticle = articleRepo.findArticleById(articleId);
         if(deltaArticle.getLikes().contains(username))
@@ -93,7 +112,12 @@ public class ArticleService {
         return articleRepo.save(deltaArticle);
     }
 
-    // adds username to the article's dislikes, removes username from likes if it is present
+    /**
+     * Adds username to the article's dislikes, removes username from likes if it is present
+     * @param username The username of the user disliking the article
+     * @param articleId Thie id of the article that's being disliked
+     * @return
+     */
     public DeltaArticle addDislike(String username, String articleId){
         DeltaArticle deltaArticle = articleRepo.findArticleById(articleId);
         if(deltaArticle.getDislikes().contains(username))
@@ -103,7 +127,5 @@ public class ArticleService {
         deltaArticle.getLikes().remove(username);
         return articleRepo.save(deltaArticle);
     }
-
-
 
 }
