@@ -3,10 +3,12 @@ package com.revature.deltaforce.web.controllers;
 import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.services.UserService;
 import com.revature.deltaforce.web.dtos.AppUserDTO;
+import com.revature.deltaforce.web.dtos.EditUserDTO;
 import com.revature.deltaforce.web.dtos.Principal;
 import com.revature.deltaforce.web.util.security.Secured;
 import com.revature.deltaforce.web.util.security.TokenGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +29,7 @@ public class UserController {
     }
 
     // Get a user by their ID
+    // ex: GET /user/aj3io4jp2d3o908df34
     @GetMapping(value = "{id}", produces = "application/json")
     public AppUserDTO getUserById(@PathVariable String id) {
         return userService.findUserById(id);
@@ -39,6 +42,29 @@ public class UserController {
         resp.setHeader(tokenGenerator.getJwtHeader(), tokenGenerator.createToken(principal));
         return principal;
     }
+
+
+    // Edit user using EditUserDTO, returns new Principal.
+    // ex: PUT
+    @PutMapping(
+            value="/edit",
+            consumes = "application/json",
+            produces = "application/json")
+    @Secured(allowedRoles = {})
+    public AppUserDTO editUser(@RequestBody @Valid EditUserDTO editedUser){
+        return null;
+    }
+
+    // Delete User (admin only)
+    @Secured(allowedRoles = {"admin"})
+    @DeleteMapping(
+            value = "{username}"
+    )
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void deleteUserByUsername(@PathVariable String username){ userService.deleteUserByUsername(username);}
+
+
+    // User Favorites
 
     // user/23i4on3ad4sd3fi3oj/faves?add=eggs
     @PostMapping(

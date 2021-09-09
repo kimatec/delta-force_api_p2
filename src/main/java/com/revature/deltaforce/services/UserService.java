@@ -140,4 +140,13 @@ public class UserService {
         return userRepo.findAppUserByEmail(email) != null;
     }
 
+    public void deleteUserByUsername(String username) {
+        AppUser userToDelete = userRepo.findAppUserByUsername(username);
+        if(userToDelete==null)
+            throw new InvalidRequestException("No user found with provided username.");
+        userRepo.delete(userToDelete);
+        // TODO: Relational integrity - Clean up all instances of this user's likes and comments in ArticleRepo as well
+        //  ...or set all the user's entries to "DELETED_USER"
+        //  and comments to "This user's comments have been removed."
+    }
 }
