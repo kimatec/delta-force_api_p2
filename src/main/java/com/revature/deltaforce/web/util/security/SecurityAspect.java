@@ -1,5 +1,6 @@
 package com.revature.deltaforce.web.util.security;
 
+import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.datasources.models.Comment;
 import com.revature.deltaforce.util.exceptions.AuthenticationException;
 import com.revature.deltaforce.web.dtos.Principal;
@@ -9,6 +10,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,41 +42,30 @@ public class SecurityAspect {
                                       .getAnnotation(Secured.class)
                                       .allowedRoles()
         );
-
-
-        HttpServletRequest req = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-
-
-        Principal principal = parseToken(req)
-                .orElseThrow(() ->
-                new AuthenticationException("Request originates from an unauthenticated source.")
-        );
+        Principal principal = getPrincipal();
 
         // Allowed Roles is empty when all roles are permitted
         if (!allowedRoles.isEmpty()) {
-            // TODO: Implement user/admin roles.
             // if the user's role is not listed, throw exception
-            //if(!allowedRoles.contains(principal.getRole()))
+//            if(!allowedRoles.contains(principal.getRole()))
             throw new AuthenticationException("A forbidden request was made by: " + principal.getUsername());
         }
         return pjp.proceed();
     }
 
-    @Around("@annotation(com.revature.deltaforce.web.util.security.IsMine)")
-    public Object isItMine(ProceedingJoinPoint pjp) throws Throwable{
-        HttpServletRequest req = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+    @Around("@annotation(com.revature.deltaforce.web.util.security.IsMyComment)")
+    public Object isMyComment(ProceedingJoinPoint pjp) throws Throwable{
+       if (!((Comment) pjp.getArgs()[0]).getUsername().equals(getPrincipal().getUsername()))
+                   throw new AuthenticationException("You can't update a comment you didn't write!");
+        return pjp.proceed();
+    }
 
-        Principal principal = parseToken(req)
-                .orElseThrow(() ->
-                        new AuthenticationException("Request originates from an unauthenticated source.")
-                );
+    @Around("@annotation(com.revature.deltaforce.web.util.security.IsMyLike)")
+    public Object isMyLike(ProceedingJoinPoint pjp) throws Throwable{
+        System.out.println("*****************************************"+ pjp.getArgs()[0]);
 
-        if (pjp.getArgs()[0] instanceof Comment) {
-            if (!principal.getUsername().equals(((Comment)pjp.getArgs()[0]).getUsername()))
-            {
-                throw new AuthenticationException("You can only delete comments that you wrote!");
-            }
-        }
+        if (!((AppUser) pjp.getArgs()[0]).getUsername().equals(getPrincipal().getUsername()))
+            throw new AuthenticationException("Invalid user");
         return pjp.proceed();
     }
 
@@ -101,5 +92,14 @@ public class SecurityAspect {
         }
     }
 
+    public Principal getPrincipal(){
+
+        HttpServletRequest req = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        Principal principal = parseToken(req)
+                .orElseThrow(() ->
+                        new AuthenticationException("Request originates from an unauthenticated source.")
+                );
+        return principal;
+    }
 
 }

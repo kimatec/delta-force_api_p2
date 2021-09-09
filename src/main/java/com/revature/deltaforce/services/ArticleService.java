@@ -83,10 +83,14 @@ public class ArticleService {
     }
 
     // adds a username to the article's likes, removes username from dislikes if it is present
-    public DeltaArticle addLike(String username, DeltaArticle likedArticle){
-        likedArticle.getDislikes().remove(username);
-        likedArticle.getLikes().add(username);
-        return articleRepo.save(likedArticle);
+    public DeltaArticle addLike(String username, String articleId){
+        DeltaArticle deltaArticle = articleRepo.findArticleById(articleId);
+        if(deltaArticle.getLikes().contains(username))
+            deltaArticle.getLikes().remove(username);
+        else
+           deltaArticle.getLikes().add(username);
+        deltaArticle.getDislikes().remove(username);
+        return articleRepo.save(deltaArticle);
     }
 
     // adds username to the article's dislikes, removes username from likes if it is present
