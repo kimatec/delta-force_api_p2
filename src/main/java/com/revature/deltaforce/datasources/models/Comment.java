@@ -14,7 +14,7 @@ public class Comment {
     @NotBlank
     private String username;
 
-    @NotBlank
+    @NotBlank(message = "Content cannot be blank.")
     private String content;
 
     private Instant timePosted;

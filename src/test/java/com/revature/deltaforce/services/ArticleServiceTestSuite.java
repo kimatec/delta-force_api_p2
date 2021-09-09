@@ -7,9 +7,11 @@ import com.revature.deltaforce.datasources.repositories.ArticleRepository;
 import com.revature.deltaforce.util.exceptions.ExternalDataSourceException;
 import com.revature.deltaforce.util.exceptions.InvalidRequestException;
 import com.revature.deltaforce.web.dtos.Source;
+import org.assertj.core.util.diff.Delta;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,54 +63,70 @@ public class ArticleServiceTestSuite {
 
     }
 
-    // addComment Tests
-//    @Test
-//    public void addComment_returnsCommentedArticle_whenValidCommentProvided(){
-//        // Arrange
-//        DeltaArticle validArticle = new DeltaArticle();
-//        Comment validComment = new Comment("validUsername","validComment");
-//        DeltaArticle expectedResult = new DeltaArticle();
-//        expectedResult.addComment(validComment);
-//        when(mockArticleRepo.save(validArticle)).thenReturn(expectedResult);
-//
-//        // Act
-//        DeltaArticle actualResult = sut.addComment(validComment,validArticle);
-//
-//        // Assert
-//        assertEquals(actualResult, expectedResult);
-//        verify(mockArticleRepo,times(1)).save(validArticle);
-//
-//    }
+     //addComment Tests
+    @Test
+    public void addComment_returnsCommentedArticle_whenValidCommentProvided(){
+        // Arrange
+        DeltaArticle validArticle = new DeltaArticle();
+        Comment validComment = new Comment("validUsername","validComment");
+        DeltaArticle expectedResult = new DeltaArticle();
+        expectedResult.addComment(validComment);
+        when(mockArticleRepo.findArticleById("id")).thenReturn(validArticle);
+        when(mockArticleRepo.save(validArticle)).thenReturn(expectedResult);
 
-//    @Test
-//    public void addComment_throwsException_whenInvalidCommentProvided(){
-//        // Arrange
-//        DeltaArticle validArticle = new DeltaArticle();
-//        Comment invalidComment = new Comment("username","");
-//
-//        // Act
-//        InvalidRequestException e = assertThrows(InvalidRequestException.class, () -> sut.addComment(invalidComment,validArticle));
-//
-//        // Assert
-//        verify(mockArticleRepo,times(0)).save(validArticle);
-//
-//    }
+        // Act
+        DeltaArticle actualResult = sut.addComment(validComment,"id");
 
-    // removeComment Tests
-//    @Test
-//    public void removeComment_returnsUncommentedArticle_whenValidCommentProvided(){
-//        // Arrange
-//        DeltaArticle validArticle = new DeltaArticle();
-//        Comment validComment = new Comment("validUsername","validComment");
-//        validArticle.addComment(validComment);
-//        when(mockArticleRepo.save(validArticle)).thenReturn(validArticle);
-//
-//        // Act
-//        DeltaArticle actualResult = sut.removeComment(validComment,validArticle);
-//        // Assert
-//        assertEquals(actualResult, validArticle);
-//        verify(mockArticleRepo,times(1)).save(validArticle);
-//
-//    }
+        // Assert
+        assertEquals(actualResult, expectedResult);
+        verify(mockArticleRepo,times(1)).save(validArticle);
 
+    }
+
+    @Test
+    public void removeComment_returnsUncommentedArticle_whenValidCommentProvided(){
+        // Arrange
+        DeltaArticle validArticle = new DeltaArticle();
+        Comment validComment = new Comment("validUsername","validComment");
+        validArticle.addComment(validComment);
+        when(mockArticleRepo.findArticleById("id")).thenReturn(validArticle);
+        when(mockArticleRepo.save(validArticle)).thenReturn(validArticle);
+
+        // Act
+        DeltaArticle actualResult = sut.removeComment(validComment,"id");
+        // Assert
+        assertEquals(actualResult, validArticle);
+        verify(mockArticleRepo,times(1)).save(validArticle);
+
+    }
+
+    @Test
+    public void addLike_addsLike_whenArticleHasNoLikeByUser(){
+        // Arrange
+        DeltaArticle validArticle = new DeltaArticle();
+        DeltaArticle likedArticle = new DeltaArticle();
+        likedArticle.getLikes().add("username");
+        when(mockArticleRepo.findArticleById("id")).thenReturn(validArticle);
+        when(mockArticleRepo.save(validArticle)).thenReturn(likedArticle);
+
+        // Act
+        DeltaArticle actualResult = sut.addLike("username","id");
+        //Assert
+        assertEquals(actualResult, likedArticle);
+    }
+
+    @Test
+    public void addDislike_addsDislike_whenArticleHasNoDislikeByUser(){
+        // Arrange
+        DeltaArticle validArticle = new DeltaArticle();
+        DeltaArticle dislikedArticle = new DeltaArticle();
+        dislikedArticle.getDislikes().add("username");
+        when(mockArticleRepo.findArticleById("id")).thenReturn(validArticle);
+        when(mockArticleRepo.save(validArticle)).thenReturn(dislikedArticle);
+
+        // Act
+        DeltaArticle actualResult = sut.addDislike("username","id");
+        //Assert
+        assertEquals(actualResult, dislikedArticle);
+    }
 }

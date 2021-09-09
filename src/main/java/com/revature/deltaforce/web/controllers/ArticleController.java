@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/article")
 public class ArticleController {
@@ -35,7 +37,7 @@ public class ArticleController {
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
-    public DeltaArticle addComment(@RequestBody Comment comment, @RequestParam("id") String articleId){ return articleService.addComment(comment, articleId);}
+    public DeltaArticle addComment(@RequestBody @Valid Comment comment, @RequestParam("id") String articleId){ return articleService.addComment(comment, articleId);}
 
 
     @PostMapping(

@@ -73,9 +73,6 @@ public class ArticleService {
      */
     public DeltaArticle addComment(Comment comment, String articleId){
         DeltaArticle deltaArticle = articleRepo.findArticleById(articleId);
-        if(deltaArticle.getContent().trim().equals("")||deltaArticle.getContent()==null)
-            throw new InvalidRequestException("Comments cannot be empty!");
-
         deltaArticle.addComment(comment);
         articleRepo.save(deltaArticle);
         return deltaArticle;
