@@ -44,7 +44,8 @@ public class UserController {
     }
 
 
-    // Edit user using EditUserDTO, returns new Principal.
+    // Edit user using EditUserDTO, returns new Principal?
+    // I want to go over this one before I do any implementation.
     // ex: PUT
     @PutMapping(
             value="/edit",
