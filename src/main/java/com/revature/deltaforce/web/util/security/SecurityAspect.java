@@ -62,12 +62,18 @@ public class SecurityAspect {
 
     @Around("@annotation(com.revature.deltaforce.web.util.security.IsMyLike)")
     public Object isMyLike(ProceedingJoinPoint pjp) throws Throwable{
-        System.out.println("*****************************************"+ pjp.getArgs()[0]);
-
         if (!((AppUser) pjp.getArgs()[0]).getUsername().equals(getPrincipal().getUsername()))
             throw new AuthenticationException("Invalid user");
         return pjp.proceed();
     }
+
+    @Around("@annotation(com.revature.deltaforce.web.util.security.IsMyDislike)")
+    public Object isMyDislike(ProceedingJoinPoint pjp) throws Throwable{
+        if (!((AppUser) pjp.getArgs()[0]).getUsername().equals(getPrincipal().getUsername()))
+            throw new AuthenticationException("Invalid user");
+        return pjp.proceed();
+    }
+
 
     public Optional<Principal> parseToken(HttpServletRequest req) {
         try {
