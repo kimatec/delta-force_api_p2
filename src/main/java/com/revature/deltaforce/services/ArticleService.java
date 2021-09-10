@@ -65,18 +65,21 @@ public class ArticleService {
         logger.error("NUMBER OF FILTERED ARTICLES: " + filteredArticles.size());
         articleRepo.saveAll(filteredArticles);
 
-        return requestedArticles;
+        List<URL> requestedUrls = requestedArticles.stream()
+                .map(article -> article.getUrl())
+                .collect(Collectors.toList());
+
+        return articleRepo.findDeltaArticleByUrl(requestedUrls).stream().distinct().collect(Collectors.toList());
         }
 
 
     /**
      * Adds comment to article given by articleId, then returns the updated article
      * @param comment The comment to be added
-     * @param articleId The id of the article in which the comment will be added
      * @return
      */
-    public DeltaArticle addComment(Comment comment, String articleId){
-        DeltaArticle deltaArticle = articleRepo.findArticleById(articleId);
+    public DeltaArticle addComment(Comment comment){
+        DeltaArticle deltaArticle = articleRepo.findArticleByUrl(comment.getUrl());
         deltaArticle.addComment(comment);
         articleRepo.save(deltaArticle);
         return deltaArticle;
@@ -85,11 +88,10 @@ public class ArticleService {
     /**
      * Removes comment from article given by articleId, then returns the updated article
      * @param comment The comment to be removed
-     * @param articleId The id of the article in which the comment will be removed
      * @return
      */
-    public DeltaArticle removeComment(Comment comment, String articleId){
-        DeltaArticle deltaArticle = articleRepo.findArticleById(articleId);
+    public DeltaArticle removeComment(Comment comment){
+        DeltaArticle deltaArticle = articleRepo.findArticleByUrl(comment.getUrl());
         if(!deltaArticle.getComments().contains(comment))
             throw new ResourceNotFoundException("Comment not found.");
         deltaArticle.removeComment(comment);

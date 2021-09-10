@@ -13,6 +13,7 @@ import java.util.List;
 public interface ArticleRepository extends MongoRepository<DeltaArticle, String> {
     @Query("{'url' : {$in: ?0 } }")
     List<DeltaArticle> findDeltaArticleByUrl(List<URL> urls);
+    DeltaArticle findArticleByUrl(String url);
     DeltaArticle findArticleById(String id);
     DeltaArticle deleteDeltaArticleByUrl(URL url);
 }
