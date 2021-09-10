@@ -51,14 +51,8 @@ public class DeltaArticle implements Comparable<DeltaArticle>{
 
     @Override
     public int compareTo(DeltaArticle deltaArticle) {
-
-        return Comparator.comparing(DeltaArticle::getLikes, (a1,a2) -> {
-                    return Integer.compare(a2.size(), a1.size());
-                })
-                .thenComparing(DeltaArticle::getComments, (c1,c2) -> {
-                    return Integer.compare(c2.size(), c1.size());
-                })
+        return Comparator.comparing(DeltaArticle::getLikes, (a1,a2) -> Integer.compare(a2.size(), a1.size()))
+                .thenComparing(DeltaArticle::getComments, (c1,c2) -> Integer.compare(c2.size(), c1.size()))
                 .compare(this, deltaArticle);
-
     }
 }

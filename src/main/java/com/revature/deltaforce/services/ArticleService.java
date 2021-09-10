@@ -8,9 +8,8 @@ import com.revature.deltaforce.datasources.models.ExternalAPIArticle;
 
 import com.revature.deltaforce.datasources.repositories.ArticleRepository;
 import com.revature.deltaforce.util.exceptions.ExternalDataSourceException;
-import com.revature.deltaforce.util.exceptions.InvalidRequestException;
 import com.revature.deltaforce.util.exceptions.ResourceNotFoundException;
-import com.revature.deltaforce.web.dtos.CommentDTO;
+
 
 
 import org.slf4j.Logger;
@@ -125,6 +124,10 @@ public class ArticleService {
         return articleRepo.save(deltaArticle);
     }
 
+    /**
+     * Returns ten most popular articles, based primarily on the number of likes, followed by number of comments.
+     * @return
+     */
     public List<DeltaArticle> getPopularArticles(){
        return articleRepo.findAll().stream()
                                    .sorted()
