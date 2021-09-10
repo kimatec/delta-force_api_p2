@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
  *  Named "Info" in the event we would like to allow users to provide more information.
  **/
 @Data
-public class EditUserInfoDTO {
+public class EditUserInfoDTO extends EditUserDTO {
 
     // Get the ID from the Principal in the UI
     private String id;

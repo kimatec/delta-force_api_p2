@@ -4,6 +4,7 @@ import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.datasources.models.Comment;
 import com.revature.deltaforce.util.exceptions.AuthenticationException;
 import com.revature.deltaforce.web.dtos.Principal;
+import com.revature.deltaforce.web.dtos.edituser.EditUserDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -47,9 +48,17 @@ public class SecurityAspect {
         // Allowed Roles is empty when all roles are permitted
         if (!allowedRoles.isEmpty()) {
             // if the user's role is not listed, throw exception
-//            if(!allowedRoles.contains(principal.getRole()))
+            if(!allowedRoles.contains(principal.getRole()))
             throw new AuthenticationException("A forbidden request was made by: " + principal.getUsername());
         }
+        return pjp.proceed();
+    }
+
+    @Around("@annotation(com.revature.deltaforce.web.util.security.IsMyAccount)")
+    public Object isMyAccount(ProceedingJoinPoint pjp) throws Throwable{
+        Principal principal = getPrincipal();
+        if (!((EditUserDTO)(pjp.getArgs()[0])).getId().equals(principal.getId()))
+            throw new AuthenticationException("Invalid account edit attempt detected by: " + principal.getUsername());
         return pjp.proceed();
     }
 
