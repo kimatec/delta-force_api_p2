@@ -125,4 +125,11 @@ public class ArticleService {
         return articleRepo.save(deltaArticle);
     }
 
+    public List<DeltaArticle> getPopularArticles(){
+       return articleRepo.findAll().stream()
+                                   .sorted()
+                                   .limit(10)
+                                   .collect(Collectors.toList());
+
+    }
 }
