@@ -4,6 +4,7 @@ import com.revature.deltaforce.datasources.models.Comment;
 import com.revature.deltaforce.datasources.models.DeltaArticle;
 import com.revature.deltaforce.datasources.models.ExternalAPIArticle;
 import com.revature.deltaforce.datasources.repositories.ArticleRepository;
+import com.revature.deltaforce.datasources.repositories.UserRepository;
 import com.revature.deltaforce.util.exceptions.ExternalDataSourceException;
 import com.revature.deltaforce.util.exceptions.InvalidRequestException;
 import com.revature.deltaforce.web.dtos.Source;
@@ -22,13 +23,14 @@ import static org.mockito.Mockito.*;
 public class ArticleServiceTestSuite {
 
     ArticleService sut;
-
+    private UserRepository mockUserRepo;
     private ArticleRepository mockArticleRepo;
 
     @BeforeEach
     public void beforeEachTest(){
+        mockUserRepo = mock(UserRepository.class);
         mockArticleRepo = mock(ArticleRepository.class);
-        sut = new ArticleService(mockArticleRepo);
+        sut = new ArticleService(mockUserRepo, mockArticleRepo);
     }
 
     @AfterEach

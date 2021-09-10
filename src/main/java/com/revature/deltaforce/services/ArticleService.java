@@ -2,11 +2,13 @@ package com.revature.deltaforce.services;
 
 
 
+import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.datasources.models.Comment;
 import com.revature.deltaforce.datasources.models.DeltaArticle;
 import com.revature.deltaforce.datasources.models.ExternalAPIArticle;
 
 import com.revature.deltaforce.datasources.repositories.ArticleRepository;
+import com.revature.deltaforce.datasources.repositories.UserRepository;
 import com.revature.deltaforce.util.exceptions.ExternalDataSourceException;
 import com.revature.deltaforce.util.exceptions.ResourceNotFoundException;
 
@@ -25,10 +27,12 @@ import java.util.stream.Collectors;
 @Service
 public class ArticleService {
     Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final UserRepository userRepo;
     private final ArticleRepository articleRepo;
 
     @Autowired
-    public ArticleService(ArticleRepository articleRepo){
+    public ArticleService(UserRepository userRepo, ArticleRepository articleRepo){
+        this.userRepo = userRepo;
         this.articleRepo = articleRepo;
     }
 
@@ -45,6 +49,7 @@ public class ArticleService {
             throw new ExternalDataSourceException("Bad Response: No articles received");
         }
         List<DeltaArticle> requestedArticles = externalAPIArticles.stream()
+                                                            .limit(10)
                                                             .map(DeltaArticle::new)
                                                             .collect(Collectors.toList());
 
@@ -134,5 +139,12 @@ public class ArticleService {
                                    .limit(10)
                                    .collect(Collectors.toList());
 
+    }
+
+    public List<String> getFavoriteUrls(String username){
+        AppUser user = userRepo.findAppUserByUsername(username);
+        return user.getFavTopics().stream()
+                .map(string -> "top-headlines?country=us&category="+string+"&apiKey=")
+                .collect(Collectors.toList());
     }
 }

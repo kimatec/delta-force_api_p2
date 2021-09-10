@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Document(collection = "articles")
@@ -54,5 +55,18 @@ public class DeltaArticle implements Comparable<DeltaArticle>{
         return Comparator.comparing(DeltaArticle::getLikes, (a1,a2) -> Integer.compare(a2.size(), a1.size()))
                 .thenComparing(DeltaArticle::getComments, (c1,c2) -> Integer.compare(c2.size(), c1.size()))
                 .compare(this, deltaArticle);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DeltaArticle that = (DeltaArticle) o;
+        return Objects.equals(url, that.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(url);
     }
 }
