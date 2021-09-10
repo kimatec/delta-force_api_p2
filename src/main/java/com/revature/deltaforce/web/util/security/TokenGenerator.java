@@ -25,7 +25,7 @@ public class TokenGenerator {
         JwtBuilder tokenBuilder = Jwts.builder()
                 .setId(subject.getId())
                 .setSubject(subject.getUsername())
-                // .claim("role", subject.getRole().toString()) // specify the role of the user for whom this token is for
+                .claim("role", subject.getRole()) // specify the role of the user for whom this token is for
                 .setIssuer("revature")
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + jwtConfig.getExpiration()))

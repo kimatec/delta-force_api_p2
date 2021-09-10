@@ -11,6 +11,7 @@ import java.util.Objects;
 public class AppUserDTO {
 
     private String id;
+
     private String firstName;
     private String lastName;
     private String email;
