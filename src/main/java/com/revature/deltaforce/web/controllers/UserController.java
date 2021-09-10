@@ -48,7 +48,7 @@ public class UserController {
 
 
     // Edit user password, returns new principal and updates JWT
-    // ex: PUT /edit/password
+    // ex: PUT user/edit/password
     @PutMapping(
             value="/edit/password",
             consumes = "application/json",
@@ -61,7 +61,7 @@ public class UserController {
     }
 
     // Edit username, returns new principal and updates JWT
-    // ex: PUT /edit/username
+    // ex: PUT user/edit/username
     @PutMapping(
             value="/edit/username",
             consumes = "application/json",
@@ -74,7 +74,7 @@ public class UserController {
     }
 
     // Edit user email
-    // ex: PUT /edit/email
+    // ex: PUT user/edit/email
     @PutMapping(
             value="/edit/email",
             consumes = "application/json",
@@ -85,7 +85,7 @@ public class UserController {
     }
 
     // Edit user info - currently first name and last name
-    // ex: PUT /edit/names
+    // ex: PUT user/edit/userinfo
     @PutMapping(
             value="/edit/userinfo",
             consumes = "application/json",

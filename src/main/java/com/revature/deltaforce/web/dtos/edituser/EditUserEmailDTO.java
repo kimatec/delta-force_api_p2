@@ -17,7 +17,7 @@ public class EditUserEmailDTO {
     private String id;
 
     // Hold the new Email here
-    @Email
+    @Email(message = "Please provide a valid email!")
     private String newEmail;
 
     // Verify the user's existing password here

@@ -15,7 +15,8 @@ public class EditUsernameDTO {
     // Get the ID from the Principal in the UI
     private String id;
 
-    // Hold the new Password here
+    // Hold the new username here
+    @NotBlank(message = "Username cannot be blank!")
     private String newUsername;
 
     // Verify the user's existing password here
