@@ -70,14 +70,14 @@ public class ArticleServiceTestSuite {
     public void addComment_returnsCommentedArticle_whenValidCommentProvided(){
         // Arrange
         DeltaArticle validArticle = new DeltaArticle();
-        Comment validComment = new Comment("validUsername","validComment");
+        Comment validComment = new Comment("validUrl","validUsername","validComment");
         DeltaArticle expectedResult = new DeltaArticle();
         expectedResult.addComment(validComment);
-        when(mockArticleRepo.findArticleById("id")).thenReturn(validArticle);
+        when(mockArticleRepo.findArticleByUrl(validComment.getUrl())).thenReturn(validArticle);
         when(mockArticleRepo.save(validArticle)).thenReturn(expectedResult);
 
         // Act
-        DeltaArticle actualResult = sut.addComment(validComment,"id");
+        DeltaArticle actualResult = sut.addComment(validComment);
 
         // Assert
         assertEquals(actualResult, expectedResult);
@@ -89,13 +89,13 @@ public class ArticleServiceTestSuite {
     public void removeComment_returnsUncommentedArticle_whenValidCommentProvided(){
         // Arrange
         DeltaArticle validArticle = new DeltaArticle();
-        Comment validComment = new Comment("validUsername","validComment");
+        Comment validComment = new Comment("validUrl", "validUsername","validComment");
         validArticle.addComment(validComment);
-        when(mockArticleRepo.findArticleById("id")).thenReturn(validArticle);
+        when(mockArticleRepo.findArticleByUrl(validComment.getUrl())).thenReturn(validArticle);
         when(mockArticleRepo.save(validArticle)).thenReturn(validArticle);
 
         // Act
-        DeltaArticle actualResult = sut.removeComment(validComment,"id");
+        DeltaArticle actualResult = sut.removeComment(validComment);
         // Assert
         assertEquals(actualResult, validArticle);
         verify(mockArticleRepo,times(1)).save(validArticle);

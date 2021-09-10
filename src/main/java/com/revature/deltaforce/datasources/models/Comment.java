@@ -10,16 +10,15 @@ import java.util.Objects;
 
 @Data
 public class Comment {
-
+    private String url;
     @NotBlank
     private String username;
-
     @NotBlank(message = "Content cannot be blank.")
     private String content;
-
     private Instant timePosted;
 
-    public Comment(String username, String content) {
+    public Comment(String url, String username, String content) {
+        this.url = url;
         this.username = username;
         this.content = content;
         this.timePosted = Instant.now();
@@ -30,7 +29,7 @@ public class Comment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Comment comment = (Comment) o;
-        return Objects.equals(username, comment.username) && Objects.equals(content, comment.content);
+        return Objects.equals(username, comment.username) && Objects.equals(content, comment.content) && Objects.equals(url, comment.url);
     }
 
 }
