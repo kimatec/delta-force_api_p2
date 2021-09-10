@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import java.net.URL;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +39,7 @@ public class ArticleService {
     }
 
     /**
-     * Takes in a list of articles, saves all articles that are not already saved to our api database,
+     * Takes in a list of articles and filters them down to 10, saves all articles that are not already saved to our api database,
      * then returns the initial list of articles.
      * @param externalAPIArticles A list of articles extracted from News API
      * @return
@@ -63,8 +65,10 @@ public class ArticleService {
                                                             .filter(article -> !existingArticles.contains(article))
                                                             .collect(Collectors.toList());
         logger.error("NUMBER OF FILTERED ARTICLES: " + filteredArticles.size());
+
         articleRepo.saveAll(filteredArticles);
 
+        //The list of URLs for the requested articles, so that we can re-fetch articles from our database after saving.
         List<URL> requestedUrls = requestedArticles.stream()
                 .map(article -> article.getUrl())
                 .collect(Collectors.toList());
@@ -140,13 +144,22 @@ public class ArticleService {
                                    .sorted()
                                    .limit(10)
                                    .collect(Collectors.toList());
-
     }
 
-    public List<String> getFavoriteUrls(String username){
+    /**
+     * Maps each of your favorite topics to the corresponding NewsAPI URL, then returns the list of URLs as Strings. If
+     * the user has no favorite topics, the returned list will have  a URL for the top headlines in the country.
+     *
+     * @param username The username of the user requesting the articles.
+     * @return
+     */
+    public List<String> getFavoriteUrls(String username) {
         AppUser user = userRepo.findAppUserByUsername(username);
-        return user.getFavTopics().stream()
-                .map(string -> "top-headlines?country=us&category="+string+"&apiKey=")
-                .collect(Collectors.toList());
+        if (!user.getFavTopics().isEmpty()) {
+            return user.getFavTopics().stream()
+                                      .map(string -> "top-headlines?country=us&category=" + string + "&apiKey=")
+                                      .collect(Collectors.toList());
+        } else
+            return new ArrayList<>(Arrays.asList("top-headlines?country=us&apiKey="));
     }
 }

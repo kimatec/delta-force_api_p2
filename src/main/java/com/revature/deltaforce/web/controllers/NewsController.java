@@ -1,5 +1,6 @@
 package com.revature.deltaforce.web.controllers;
 
+import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.datasources.models.DeltaArticle;
 import com.revature.deltaforce.datasources.models.NewsResponse;
 import com.revature.deltaforce.services.ArticleService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,14 +58,19 @@ public class NewsController {
     @Secured(allowedRoles = {})
     public List<DeltaArticle> popularArticles(){return articleService.getPopularArticles();}
 
+    // Fetches 10 articles from each of your favorite topics, shuffles them, then returns 10 articles.
     @GetMapping("/dashboard")
-    public List<List<DeltaArticle>> favTopics(@RequestBody String username){
-        List<String> favTopicUrls = articleService.getFavoriteUrls(username);
-        return favTopicUrls.stream()
+    public List<DeltaArticle> favTopics(@RequestBody AppUser username){
+        List<String> favTopicUrls = articleService.getFavoriteUrls(username.getUsername());
+        List<DeltaArticle> favArticles = favTopicUrls.stream()
                             .map(string -> newsServiceUrl+string+apiKey)
                             .map(url -> restClient.getForObject(url, NewsResponse.class))
                             .map(response -> articleService.newsResponseHandler(response.getArticles()))
+                            .flatMap(list -> list.stream())
                             .collect(Collectors.toList());
+        if(!favTopicUrls.contains("top-headlines?country=us&apiKey="))
+            Collections.shuffle(favArticles);
+        return favArticles.subList(0,9);
     }
 
 }
