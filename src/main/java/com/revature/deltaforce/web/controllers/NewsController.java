@@ -50,4 +50,8 @@ public class NewsController {
         NewsResponse newsResponse = restClient.getForObject(url, NewsResponse.class);
         return articleService.newsResponseHandler(newsResponse.getArticles());
     }
+
+    @GetMapping("/popular")
+    @Secured(allowedRoles = {})
+    public List<DeltaArticle> popularArticles(){return articleService.getPopularArticles();}
 }

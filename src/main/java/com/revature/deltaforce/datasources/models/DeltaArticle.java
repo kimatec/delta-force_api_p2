@@ -8,12 +8,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+
+import java.util.Comparator;
 import java.util.List;
 
 @Data
 @Document(collection = "articles")
 @NoArgsConstructor
-public class DeltaArticle {
+public class DeltaArticle implements Comparable<DeltaArticle>{
 
     private String id;
     private Source source;
@@ -45,4 +47,12 @@ public class DeltaArticle {
     }
 
     public void removeComment(Comment comment) { this.comments.remove(comment);}
+
+
+    @Override
+    public int compareTo(DeltaArticle deltaArticle) {
+        return Comparator.comparing(DeltaArticle::getLikes, (a1,a2) -> Integer.compare(a2.size(), a1.size()))
+                .thenComparing(DeltaArticle::getComments, (c1,c2) -> Integer.compare(c2.size(), c1.size()))
+                .compare(this, deltaArticle);
+    }
 }
