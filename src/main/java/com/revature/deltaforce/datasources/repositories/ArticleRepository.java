@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -15,4 +16,5 @@ public interface ArticleRepository extends MongoRepository<DeltaArticle, String>
     List<DeltaArticle> findDeltaArticleByUrl(List<URL> urls);
     DeltaArticle findArticleById(String id);
     DeltaArticle deleteDeltaArticleByUrl(URL url);
+    DeltaArticle findAllByUrl(ArrayList<URL> urls);
 }
