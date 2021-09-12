@@ -39,7 +39,7 @@ public class ArticleController {
     @Secured(allowedRoles = {})
     public DeltaArticle addComment(@RequestBody @Valid Comment comment, @RequestParam("id") String articleId){ return articleService.addComment(comment, articleId);}
 
-
+    // Example: /article/like?id=613ba397a7763649c6fa1ed7
     @PostMapping(
             value = "/like",
             params = {"id"},
@@ -49,6 +49,7 @@ public class ArticleController {
     @IsMyLike
     public DeltaArticle likeArticle(@RequestBody AppUser username, @RequestParam("id") String articleId){ return articleService.addLike(username.getUsername(), articleId);}
 
+    // Example: /article/dislike?id=613ba397a7763649c6fa1ed7
     @PostMapping(
             value = "/dislike",
             params = {"id"},
