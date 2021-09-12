@@ -8,6 +8,7 @@ import com.revature.deltaforce.web.dtos.edituser.EditUserInfoDTO;
 import com.revature.deltaforce.web.dtos.edituser.EditUserPasswordDTO;
 import com.revature.deltaforce.web.dtos.Principal;
 import com.revature.deltaforce.web.dtos.edituser.EditUsernameDTO;
+import com.revature.deltaforce.web.util.security.IsMyAccount;
 import com.revature.deltaforce.web.util.security.Secured;
 import com.revature.deltaforce.web.util.security.TokenGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,7 @@ public class UserController {
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
+    @IsMyAccount
     public Principal editUserPassword(@RequestBody @Valid EditUserPasswordDTO editedUser, HttpServletResponse resp){
         Principal principal = new Principal(userService.updateUserPassword(editedUser));
         resp.setHeader(tokenGenerator.getJwtHeader(), tokenGenerator.createToken(principal));
@@ -67,6 +69,7 @@ public class UserController {
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
+    @IsMyAccount
     public Principal editUsername(@RequestBody @Valid EditUsernameDTO editedUser, HttpServletResponse resp){
         Principal principal = new Principal(userService.updateUsername(editedUser));
         resp.setHeader(tokenGenerator.getJwtHeader(), tokenGenerator.createToken(principal));
@@ -80,6 +83,7 @@ public class UserController {
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
+    @IsMyAccount
     public AppUserDTO editUserEmail(@RequestBody @Valid EditUserEmailDTO editedUser){
         return new AppUserDTO(userService.updateUserEmail(editedUser));
     }
@@ -91,6 +95,7 @@ public class UserController {
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
+    @IsMyAccount
     public AppUserDTO editUserInfo(@RequestBody @Valid EditUserInfoDTO editedUser){
         return new AppUserDTO(userService.updateUserInfo(editedUser));
     }
