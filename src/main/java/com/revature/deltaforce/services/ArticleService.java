@@ -165,12 +165,19 @@ public class ArticleService {
             return new ArrayList<>(Arrays.asList("top-headlines?country=us&apiKey="));
     }
 
+    /**
+     * Replaces the former username in comments, likes, and dislikes with an updated username.
+     *
+     * @param username The username being replaced
+     * @param updateUsername  The updated username
+     * @return
+     */
     public List<DeltaArticle> updateUsername(String username, String updateUsername){
         List<DeltaArticle> userActivity = articleRepo.findDeltaArticleByUsername(username);
         userActivity.forEach(article -> {
+                    article.updateComments(username, updateUsername);
                     article.updateLikes(username, updateUsername);
                     article.updateDislikes(username, updateUsername);
-                    article.updateComments(username, updateUsername);
         });
         return articleRepo.saveAll(userActivity);
     }
