@@ -33,6 +33,7 @@ public class UserController {
         this.userService = userService;
         this.articleService = articleService;
         this.tokenGenerator = tokenGenerator;
+        this.articleService = articleService;
     }
 
     // Get a user by their ID
@@ -105,15 +106,16 @@ public class UserController {
         return new AppUserDTO(userService.updateUserInfo(editedUser));
     }
 
-
-
     // Delete User (admin only)
     @Secured(allowedRoles = {"admin"})
     @DeleteMapping(
             value = "{username}"
     )
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void deleteUserByUsername(@PathVariable String username){ userService.deleteUserByUsername(username);}
+    public void deleteUserByUsername(@PathVariable String username){
+        articleService.expungeUser(username);
+        userService.deleteUserByUsername(username);
+    }
 
 
     // User Favorites

@@ -13,7 +13,7 @@ import com.revature.deltaforce.util.exceptions.ExternalDataSourceException;
 import com.revature.deltaforce.util.exceptions.ResourceNotFoundException;
 
 
-
+import org.assertj.core.util.diff.Delta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,9 @@ import org.springframework.stereotype.Service;
 import java.net.URL;
 
 import java.util.ArrayList;
+
 import java.util.Arrays;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -186,5 +188,31 @@ public class ArticleService {
         List<DeltaArticle> userActivity = articleRepo.findDeltaArticleByUsername(username);
         // TODO: Remove all instances of username from likes, dislikes, and comments
         return articleRepo.saveAll(userActivity);
+    }
+
+    public List<DeltaArticle> updateUsername(String username, String updateUsername){
+        List<DeltaArticle> userActivity = articleRepo.findDeltaArticleByUsername(username);
+        // TODO: Update instances of username with updatedUsername
+        return articleRepo.saveAll(userActivity);
+    }
+
+    // Deleting a user's very existence
+    public void expungeUser(String username){
+
+        List<DeltaArticle> userActivity = articleRepo.findDeltaArticleByUsername(username);
+
+        userActivity.forEach(article -> {
+            article.getLikes().remove(username);
+            article.getDislikes().remove(username);
+            List<Comment> comments = article.getComments();
+            for (int i = 0; i<comments.size();i++) {
+                if (comments.get(i).getUsername().equals(username)) {
+                    article.removeComment(comments.get(i));
+                    i--;
+                }
+            }
+        });
+
+        articleRepo.saveAll(userActivity);
     }
 }

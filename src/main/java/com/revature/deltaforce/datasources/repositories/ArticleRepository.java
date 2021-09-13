@@ -19,6 +19,7 @@ public interface ArticleRepository extends MongoRepository<DeltaArticle, String>
     DeltaArticle deleteDeltaArticleByUrl(URL url);
     DeltaArticle findAllByUrl(ArrayList<URL> urls);
 
+    // Gets all articles that contain a provided username
     @Query("{$or: [ { likes : ?0 }, { dislikes : ?0  },{ 'comments.username' : ?0 } ] }")
     List<DeltaArticle> findDeltaArticleByUsername(String username);
 }
