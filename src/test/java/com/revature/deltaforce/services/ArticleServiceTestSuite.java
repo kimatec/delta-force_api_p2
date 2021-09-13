@@ -147,21 +147,20 @@ public class ArticleServiceTestSuite {
         userActivity.add(article);
         userActivity.add(article2);
 
-        System.out.println(article);
-        System.out.println(article2);
-
         when(mockArticleRepo.findDeltaArticleByUsername(username)).thenReturn(userActivity);
         when(mockArticleRepo.saveAll(userActivity)).thenReturn(userActivity);
 
         // Act
         sut.expungeUser(username);
         // Assert
-        System.out.println(userActivity);
-        boolean hasLike = userActivity.get(0).getLikes().contains(username);
-        boolean hasComment = userActivity.get(0).getComments().contains(testComment);
-        assertFalse(hasLike);
-        assertFalse(hasComment);
-
+        boolean a1HasLike = userActivity.get(0).getLikes().contains(username);
+        boolean a1HasComment = userActivity.get(0).getComments().contains(testComment);
+        boolean a2HasLike = userActivity.get(1).getLikes().contains(username);
+        boolean a2HasComment = userActivity.get(1).getComments().contains(testComment);
+        assertFalse(a1HasLike);
+        assertFalse(a1HasComment);
+        assertFalse(a2HasLike);
+        assertFalse(a2HasComment);
 
     }
 }
