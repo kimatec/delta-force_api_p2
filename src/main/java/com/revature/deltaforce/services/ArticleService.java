@@ -143,9 +143,17 @@ public class ArticleService {
         return articleRepo.saveAll(userActivity);
     }
 
-    public List<DeltaArticle> expungeUser(String username){
+    // Deleting a user's very existence
+    public void expungeUser(String username){
+
         List<DeltaArticle> userActivity = articleRepo.findDeltaArticleByUsername(username);
-        // TODO: Remove all instances of username from likes, dislikes, and comments
-        return articleRepo.saveAll(userActivity);
+
+        userActivity.forEach(article -> {
+            article.getLikes().remove(username);
+            article.getDislikes().remove(username);
+            article.getComments().stream().filter(comment -> comment.getUsername().equals(username)).forEach(article::removeComment);
+        });
+
+        articleRepo.saveAll(userActivity);
     }
 }
