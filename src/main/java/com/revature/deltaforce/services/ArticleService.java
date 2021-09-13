@@ -184,35 +184,18 @@ public class ArticleService {
         return articleRepo.saveAll(userActivity);
     }
 
-    public List<DeltaArticle> expungeUser(String username){
-        List<DeltaArticle> userActivity = articleRepo.findDeltaArticleByUsername(username);
-        // TODO: Remove all instances of username from likes, dislikes, and comments
-        return articleRepo.saveAll(userActivity);
-    }
-
-    public List<DeltaArticle> updateUsername(String username, String updateUsername){
-        List<DeltaArticle> userActivity = articleRepo.findDeltaArticleByUsername(username);
-        // TODO: Update instances of username with updatedUsername
-        return articleRepo.saveAll(userActivity);
-    }
-
-    // Deleting a user's very existence
+    /**
+     * Deleting a user's very existence
+     *
+     * @param username The username of the user being deleted
+     */
     public void expungeUser(String username){
-
         List<DeltaArticle> userActivity = articleRepo.findDeltaArticleByUsername(username);
-
         userActivity.forEach(article -> {
-            article.getLikes().remove(username);
-            article.getDislikes().remove(username);
-            List<Comment> comments = article.getComments();
-            for (int i = 0; i<comments.size();i++) {
-                if (comments.get(i).getUsername().equals(username)) {
-                    article.removeComment(comments.get(i));
-                    i--;
-                }
-            }
+                    article.getLikes().remove(username);
+                    article.getDislikes().remove(username);
+                    article.removeComments(username);
         });
-
         articleRepo.saveAll(userActivity);
     }
 }

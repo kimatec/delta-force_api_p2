@@ -136,7 +136,7 @@ public class ArticleServiceTestSuite {
     public void expungeUser_removesUsers_likesDislikesAndComments(){
         // Arrange
         String username = "user";
-        Comment testComment = new Comment(username,"test");
+        Comment testComment = new Comment("url",username,"test");
         DeltaArticle article = new DeltaArticle();
         article.getLikes().add(username);
         article.addComment(testComment);

@@ -21,6 +21,7 @@ public class Comment {
     public Comment(){
         this.timePosted = Instant.now();
     }
+
     public Comment(String articleId, String username, String content) {
         this.articleId = articleId;
         this.username = username;

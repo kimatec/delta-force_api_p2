@@ -14,7 +14,6 @@ import java.util.List;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @Data
@@ -59,15 +58,19 @@ public class DeltaArticle implements Comparable<DeltaArticle>{
                 .forEach(update -> update.setUsername(newUsername));
     }
 
+    public void removeComments(String username){
+        comments.removeIf(comment -> comment.getUsername().equals(username));
+    }
+
     public void updateLikes(String oldUsername, String newUsername){
         List<String> updatedLikes = likes.stream().map(username -> username.replaceAll(oldUsername, newUsername))
-                      .collect(Collectors.toList());
+                                                  .collect(Collectors.toList());
         this.setLikes(updatedLikes);
     }
 
     public void updateDislikes(String oldUsername, String newUsername){
         List<String> updatedDislikes = dislikes.stream().map(username -> username.replaceAll(oldUsername, newUsername))
-                .collect(Collectors.toList());
+                                                        .collect(Collectors.toList());
         this.setDislikes(updatedDislikes);
     }
 
