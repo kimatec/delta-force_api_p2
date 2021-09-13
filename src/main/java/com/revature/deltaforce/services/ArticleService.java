@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ArticleService {
@@ -83,7 +84,7 @@ public class ArticleService {
      * @return
      */
     public DeltaArticle addComment(Comment comment){
-        DeltaArticle deltaArticle = articleRepo.findArticleByUrl(comment.getUrl());
+        DeltaArticle deltaArticle = articleRepo.findArticleById(comment.getArticleId());
         deltaArticle.addComment(comment);
         articleRepo.save(deltaArticle);
         return deltaArticle;
@@ -95,7 +96,7 @@ public class ArticleService {
      * @return
      */
     public DeltaArticle removeComment(Comment comment){
-        DeltaArticle deltaArticle = articleRepo.findArticleByUrl(comment.getUrl());
+        DeltaArticle deltaArticle = articleRepo.findArticleById(comment.getArticleId());
         if(!deltaArticle.getComments().contains(comment))
             throw new ResourceNotFoundException("Comment not found.");
         deltaArticle.removeComment(comment);
@@ -146,6 +147,7 @@ public class ArticleService {
                                    .collect(Collectors.toList());
     }
 
+
     /**
      * Maps each of your favorite topics to the corresponding NewsAPI URL, then returns the list of URLs as Strings. If
      * the user has no favorite topics, the returned list will have  a URL for the top headlines in the country.
@@ -157,9 +159,25 @@ public class ArticleService {
         AppUser user = userRepo.findAppUserByUsername(username);
         if (!user.getFavTopics().isEmpty()) {
             return user.getFavTopics().stream()
-                                      .map(string -> "top-headlines?country=us&category=" + string + "&apiKey=")
-                                      .collect(Collectors.toList());
+                    .map(string -> "top-headlines?country=us&category=" + string + "&apiKey=")
+                    .collect(Collectors.toList());
         } else
             return new ArrayList<>(Arrays.asList("top-headlines?country=us&apiKey="));
+    }
+
+    public List<DeltaArticle> updateUsername(String username, String updateUsername){
+        List<DeltaArticle> userActivity = articleRepo.findDeltaArticleByUsername(username);
+        userActivity.forEach(article -> {
+                    article.updateLikes(username, updateUsername);
+                    article.updateDislikes(username, updateUsername);
+                    article.updateComments(username, updateUsername);
+        });
+        return articleRepo.saveAll(userActivity);
+    }
+
+    public List<DeltaArticle> expungeUser(String username){
+        List<DeltaArticle> userActivity = articleRepo.findDeltaArticleByUsername(username);
+        // TODO: Remove all instances of username from likes, dislikes, and comments
+        return articleRepo.saveAll(userActivity);
     }
 }

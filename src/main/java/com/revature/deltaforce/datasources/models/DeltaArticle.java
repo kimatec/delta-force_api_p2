@@ -11,7 +11,11 @@ import java.util.ArrayList;
 
 import java.util.Comparator;
 import java.util.List;
+
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 
 @Data
 @Document(collection = "articles")
@@ -49,6 +53,23 @@ public class DeltaArticle implements Comparable<DeltaArticle>{
 
     public void removeComment(Comment comment) { this.comments.remove(comment);}
 
+    public void updateComments(String oldUsername, String newUsername){
+        comments.stream()
+                .filter(filter -> filter.getUsername().equals(oldUsername))
+                .forEach(update -> update.setUsername(newUsername));
+    }
+
+    public void updateLikes(String oldUsername, String newUsername){
+        List<String> updatedLikes = likes.stream().map(username -> username.replaceAll(oldUsername, newUsername))
+                      .collect(Collectors.toList());
+        this.setLikes(updatedLikes);
+    }
+
+    public void updateDislikes(String oldUsername, String newUsername){
+        List<String> updatedDislikes = dislikes.stream().map(username -> username.replaceAll(oldUsername, newUsername))
+                .collect(Collectors.toList());
+        this.setDislikes(updatedDislikes);
+    }
 
     @Override
     public int compareTo(DeltaArticle deltaArticle) {

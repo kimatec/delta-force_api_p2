@@ -70,10 +70,10 @@ public class ArticleServiceTestSuite {
     public void addComment_returnsCommentedArticle_whenValidCommentProvided(){
         // Arrange
         DeltaArticle validArticle = new DeltaArticle();
-        Comment validComment = new Comment("validUrl","validUsername","validComment");
+        Comment validComment = new Comment("validId","validUsername","validComment");
         DeltaArticle expectedResult = new DeltaArticle();
         expectedResult.addComment(validComment);
-        when(mockArticleRepo.findArticleByUrl(validComment.getUrl())).thenReturn(validArticle);
+        when(mockArticleRepo.findArticleById(validComment.getArticleId())).thenReturn(validArticle);
         when(mockArticleRepo.save(validArticle)).thenReturn(expectedResult);
 
         // Act
@@ -89,9 +89,9 @@ public class ArticleServiceTestSuite {
     public void removeComment_returnsUncommentedArticle_whenValidCommentProvided(){
         // Arrange
         DeltaArticle validArticle = new DeltaArticle();
-        Comment validComment = new Comment("validUrl", "validUsername","validComment");
+        Comment validComment = new Comment("validId", "validUsername","validComment");
         validArticle.addComment(validComment);
-        when(mockArticleRepo.findArticleByUrl(validComment.getUrl())).thenReturn(validArticle);
+        when(mockArticleRepo.findArticleById(validComment.getArticleId())).thenReturn(validArticle);
         when(mockArticleRepo.save(validArticle)).thenReturn(validArticle);
 
         // Act
