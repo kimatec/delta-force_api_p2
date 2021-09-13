@@ -151,7 +151,13 @@ public class ArticleService {
         userActivity.forEach(article -> {
             article.getLikes().remove(username);
             article.getDislikes().remove(username);
-            article.getComments().stream().filter(comment -> comment.getUsername().equals(username)).forEach(article::removeComment);
+            List<Comment> comments = article.getComments();
+            for (int i = 0; i<comments.size();i++) {
+                if (comments.get(i).getUsername().equals(username)) {
+                    article.removeComment(comments.get(i));
+                    i--;
+                }
+            }
         });
 
         articleRepo.saveAll(userActivity);

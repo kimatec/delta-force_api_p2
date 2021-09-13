@@ -129,4 +129,39 @@ public class ArticleServiceTestSuite {
         //Assert
         assertEquals(actualResult, dislikedArticle);
     }
+
+    @Test
+    public void expungeUser_removesUsers_likesDislikesAndComments(){
+        // Arrange
+        String username = "user";
+        Comment testComment = new Comment(username,"test");
+        DeltaArticle article = new DeltaArticle();
+        article.getLikes().add(username);
+        article.addComment(testComment);
+
+        DeltaArticle article2 = new DeltaArticle();
+        article2.getDislikes().add(username);
+        article2.addComment(testComment);
+
+        List<DeltaArticle> userActivity = new ArrayList<>();
+        userActivity.add(article);
+        userActivity.add(article2);
+
+        System.out.println(article);
+        System.out.println(article2);
+
+        when(mockArticleRepo.findDeltaArticleByUsername(username)).thenReturn(userActivity);
+        when(mockArticleRepo.saveAll(userActivity)).thenReturn(userActivity);
+
+        // Act
+        sut.expungeUser(username);
+        // Assert
+        System.out.println(userActivity);
+        boolean hasLike = userActivity.get(0).getLikes().contains(username);
+        boolean hasComment = userActivity.get(0).getComments().contains(testComment);
+        assertFalse(hasLike);
+        assertFalse(hasComment);
+
+
+    }
 }
