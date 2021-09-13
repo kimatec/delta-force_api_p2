@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
  *  User will be expected to verify their identity with their existing password.
  **/
 @Data
-public class EditUserEmailDTO {
+public class EditUserEmailDTO extends EditUserDTO {
 
     // Get the ID from the Principal in the UI
     private String id;
@@ -26,3 +26,4 @@ public class EditUserEmailDTO {
 
 
 }
+

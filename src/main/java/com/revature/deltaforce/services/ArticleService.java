@@ -2,11 +2,13 @@ package com.revature.deltaforce.services;
 
 
 
+import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.datasources.models.Comment;
 import com.revature.deltaforce.datasources.models.DeltaArticle;
 import com.revature.deltaforce.datasources.models.ExternalAPIArticle;
 
 import com.revature.deltaforce.datasources.repositories.ArticleRepository;
+import com.revature.deltaforce.datasources.repositories.UserRepository;
 import com.revature.deltaforce.util.exceptions.ExternalDataSourceException;
 import com.revature.deltaforce.util.exceptions.ResourceNotFoundException;
 
@@ -20,21 +22,27 @@ import org.springframework.stereotype.Service;
 import java.net.URL;
 
 import java.util.ArrayList;
+
+import java.util.Arrays;
+
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ArticleService {
     Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final UserRepository userRepo;
     private final ArticleRepository articleRepo;
 
     @Autowired
-    public ArticleService(ArticleRepository articleRepo){
+    public ArticleService(UserRepository userRepo, ArticleRepository articleRepo){
+        this.userRepo = userRepo;
         this.articleRepo = articleRepo;
     }
 
     /**
-     * Takes in a list of articles, saves all articles that are not already saved to our api database,
+     * Takes in a list of articles and filters them down to 10, saves all articles that are not already saved to our api database,
      * then returns the initial list of articles.
      * @param externalAPIArticles A list of articles extracted from News API
      * @return
@@ -46,6 +54,7 @@ public class ArticleService {
             throw new ExternalDataSourceException("Bad Response: No articles received");
         }
         List<DeltaArticle> requestedArticles = externalAPIArticles.stream()
+                                                            .limit(10)
                                                             .map(DeltaArticle::new)
                                                             .collect(Collectors.toList());
 
@@ -59,20 +68,25 @@ public class ArticleService {
                                                             .filter(article -> !existingArticles.contains(article))
                                                             .collect(Collectors.toList());
         logger.error("NUMBER OF FILTERED ARTICLES: " + filteredArticles.size());
+
         articleRepo.saveAll(filteredArticles);
 
-        return requestedArticles;
+        //The list of URLs for the requested articles, so that we can re-fetch articles from our database after saving.
+        List<URL> requestedUrls = requestedArticles.stream()
+                .map(article -> article.getUrl())
+                .collect(Collectors.toList());
+
+        return articleRepo.findDeltaArticleByUrl(requestedUrls).stream().distinct().collect(Collectors.toList());
         }
 
 
     /**
      * Adds comment to article given by articleId, then returns the updated article
      * @param comment The comment to be added
-     * @param articleId The id of the article in which the comment will be added
      * @return
      */
-    public DeltaArticle addComment(Comment comment, String articleId){
-        DeltaArticle deltaArticle = articleRepo.findArticleById(articleId);
+    public DeltaArticle addComment(Comment comment){
+        DeltaArticle deltaArticle = articleRepo.findArticleById(comment.getArticleId());
         deltaArticle.addComment(comment);
         articleRepo.save(deltaArticle);
         return deltaArticle;
@@ -81,11 +95,10 @@ public class ArticleService {
     /**
      * Removes comment from article given by articleId, then returns the updated article
      * @param comment The comment to be removed
-     * @param articleId The id of the article in which the comment will be removed
      * @return
      */
-    public DeltaArticle removeComment(Comment comment, String articleId){
-        DeltaArticle deltaArticle = articleRepo.findArticleById(articleId);
+    public DeltaArticle removeComment(Comment comment){
+        DeltaArticle deltaArticle = articleRepo.findArticleById(comment.getArticleId());
         if(!deltaArticle.getComments().contains(comment))
             throw new ResourceNotFoundException("Comment not found.");
         deltaArticle.removeComment(comment);
@@ -134,7 +147,47 @@ public class ArticleService {
                                    .sorted()
                                    .limit(10)
                                    .collect(Collectors.toList());
+    }
 
+
+    /**
+     * Maps each of your favorite topics to the corresponding NewsAPI URL, then returns the list of URLs as Strings. If
+     * the user has no favorite topics, the returned list will have  a URL for the top headlines in the country.
+     *
+     * @param username The username of the user requesting the articles.
+     * @return
+     */
+    public List<String> getFavoriteUrls(String username) {
+        AppUser user = userRepo.findAppUserByUsername(username);
+        if (!user.getFavTopics().isEmpty()) {
+            return user.getFavTopics().stream()
+                    .map(string -> "top-headlines?country=us&category=" + string + "&apiKey=")
+                    .collect(Collectors.toList());
+        } else
+            return new ArrayList<>(Arrays.asList("top-headlines?country=us&apiKey="));
+    }
+
+    /**
+     * Replaces the former username in comments, likes, and dislikes with an updated username.
+     *
+     * @param username The username being replaced
+     * @param updateUsername  The updated username
+     * @return
+     */
+    public List<DeltaArticle> updateUsername(String username, String updateUsername){
+        List<DeltaArticle> userActivity = articleRepo.findDeltaArticleByUsername(username);
+        userActivity.forEach(article -> {
+                    article.updateComments(username, updateUsername);
+                    article.updateLikes(username, updateUsername);
+                    article.updateDislikes(username, updateUsername);
+        });
+        return articleRepo.saveAll(userActivity);
+    }
+
+    public List<DeltaArticle> expungeUser(String username){
+        List<DeltaArticle> userActivity = articleRepo.findDeltaArticleByUsername(username);
+        // TODO: Remove all instances of username from likes, dislikes, and comments
+        return articleRepo.saveAll(userActivity);
     }
 
     public List<DeltaArticle> updateUsername(String username, String updateUsername){

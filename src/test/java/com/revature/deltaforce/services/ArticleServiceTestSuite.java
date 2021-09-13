@@ -4,6 +4,7 @@ import com.revature.deltaforce.datasources.models.Comment;
 import com.revature.deltaforce.datasources.models.DeltaArticle;
 import com.revature.deltaforce.datasources.models.ExternalAPIArticle;
 import com.revature.deltaforce.datasources.repositories.ArticleRepository;
+import com.revature.deltaforce.datasources.repositories.UserRepository;
 import com.revature.deltaforce.util.exceptions.ExternalDataSourceException;
 import com.revature.deltaforce.util.exceptions.InvalidRequestException;
 import com.revature.deltaforce.web.dtos.Source;
@@ -22,13 +23,14 @@ import static org.mockito.Mockito.*;
 public class ArticleServiceTestSuite {
 
     ArticleService sut;
-
+    private UserRepository mockUserRepo;
     private ArticleRepository mockArticleRepo;
 
     @BeforeEach
     public void beforeEachTest(){
+        mockUserRepo = mock(UserRepository.class);
         mockArticleRepo = mock(ArticleRepository.class);
-        sut = new ArticleService(mockArticleRepo);
+        sut = new ArticleService(mockUserRepo, mockArticleRepo);
     }
 
     @AfterEach
@@ -68,14 +70,14 @@ public class ArticleServiceTestSuite {
     public void addComment_returnsCommentedArticle_whenValidCommentProvided(){
         // Arrange
         DeltaArticle validArticle = new DeltaArticle();
-        Comment validComment = new Comment("validUsername","validComment");
+        Comment validComment = new Comment("validId","validUsername","validComment");
         DeltaArticle expectedResult = new DeltaArticle();
         expectedResult.addComment(validComment);
-        when(mockArticleRepo.findArticleById("id")).thenReturn(validArticle);
+        when(mockArticleRepo.findArticleById(validComment.getArticleId())).thenReturn(validArticle);
         when(mockArticleRepo.save(validArticle)).thenReturn(expectedResult);
 
         // Act
-        DeltaArticle actualResult = sut.addComment(validComment,"id");
+        DeltaArticle actualResult = sut.addComment(validComment);
 
         // Assert
         assertEquals(actualResult, expectedResult);
@@ -87,13 +89,13 @@ public class ArticleServiceTestSuite {
     public void removeComment_returnsUncommentedArticle_whenValidCommentProvided(){
         // Arrange
         DeltaArticle validArticle = new DeltaArticle();
-        Comment validComment = new Comment("validUsername","validComment");
+        Comment validComment = new Comment("validId", "validUsername","validComment");
         validArticle.addComment(validComment);
-        when(mockArticleRepo.findArticleById("id")).thenReturn(validArticle);
+        when(mockArticleRepo.findArticleById(validComment.getArticleId())).thenReturn(validArticle);
         when(mockArticleRepo.save(validArticle)).thenReturn(validArticle);
 
         // Act
-        DeltaArticle actualResult = sut.removeComment(validComment,"id");
+        DeltaArticle actualResult = sut.removeComment(validComment);
         // Assert
         assertEquals(actualResult, validArticle);
         verify(mockArticleRepo,times(1)).save(validArticle);

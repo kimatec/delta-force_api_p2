@@ -37,7 +37,7 @@ public class ArticleController {
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
-    public DeltaArticle addComment(@RequestBody @Valid Comment comment, @RequestParam("id") String articleId){ return articleService.addComment(comment, articleId);}
+    public DeltaArticle addComment(@RequestBody @Valid Comment comment){ return articleService.addComment(comment);}
 
     // Example: /article/like?id=613ba397a7763649c6fa1ed7
     @PostMapping(
@@ -62,7 +62,7 @@ public class ArticleController {
     @DeleteMapping(value = "/comment", consumes = "application/json", produces = "application/json")
     @Secured(allowedRoles = {})
     @IsMyComment
-    public DeltaArticle removeComment(@RequestBody Comment comment, @RequestParam("id") String articleId) {return articleService.removeComment(comment, articleId);}
+    public DeltaArticle removeComment(@RequestBody Comment comment) {return articleService.removeComment(comment);}
 
 
 
