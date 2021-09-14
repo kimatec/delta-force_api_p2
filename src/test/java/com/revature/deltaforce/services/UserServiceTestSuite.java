@@ -17,6 +17,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -138,6 +141,20 @@ public class UserServiceTestSuite {
     // addTopic Tests
     @Test
     public void addTopic_returnsSuccessfully_whenProvided_newTopic(){
+        // Arrange
+        String validId = "valid-id";
+        String validTopic = "fav-topic";
+        AppUser expected = new AppUser();
+        expected.setId(validId);
+        when(mockUserRepo.findAppUserById(expected.getId())).thenReturn(expected);
+        when(mockUserRepo.save(any())).thenReturn(expected);
+
+        // Act
+        Set<String> actual = sut.addTopic(validId, validTopic);
+
+        //Assert
+        assertEquals(actual, expected.getFavTopics());
+
 
     }
 
@@ -149,6 +166,23 @@ public class UserServiceTestSuite {
     // removeTopic Tests
     @Test
     public void removeTopic_returnsSuccessfully_whenProvided_existingTopic(){
+        // Arrange
+        String validId = "valid-id";
+        String validTopic = "fav-topic";
+        AppUser expected = new AppUser();
+        expected.setId(validId);
+        HashSet<String> userFav = new HashSet<>();
+        userFav.add(validTopic);
+        expected.setFavTopics(userFav);
+        when(mockUserRepo.findAppUserById(expected.getId())).thenReturn(expected);
+        when(mockUserRepo.save(expected)).thenReturn(expected);
+
+
+        // Act
+        Set<String> actual = sut.removeTopic(validId, validTopic);
+
+        //Assert
+        assertEquals(actual, expected.getFavTopics());
 
     }
 
@@ -193,9 +227,11 @@ public class UserServiceTestSuite {
         AppUser validUser = new AppUser();
         EditUsernameDTO expectedUser = new EditUsernameDTO();
         expectedUser.setId(validId);
+        validUser.setPassword("encrypted");
         when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(validUser);
         when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
         when(mockUserRepo.save(any())).thenReturn(validUser);
+
 
         //Act
         AppUser actualUser = sut.updateUsername(expectedUser);
@@ -211,6 +247,7 @@ public class UserServiceTestSuite {
         AppUser validUser = new AppUser();
         EditUserPasswordDTO expectedUser = new EditUserPasswordDTO();
         expectedUser.setId(validId);
+        validUser.setPassword("encrypted");
         when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(validUser);
         when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
         when(mockUserRepo.save(any())).thenReturn(validUser);
@@ -230,6 +267,7 @@ public class UserServiceTestSuite {
         AppUser validUser = new AppUser();
         EditUserEmailDTO expectedUser = new EditUserEmailDTO();
         expectedUser.setId(validId);
+        validUser.setPassword("encrypted");
         when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(validUser);
         when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
         when(mockUserRepo.save(any())).thenReturn(validUser);
@@ -243,12 +281,19 @@ public class UserServiceTestSuite {
     }
 
     @Test
+    public void getNewEmail_throwsResourcePersistenceException_whenProvided_emailTaken(){
+
+    }
+
+
+    @Test
     public void updateUserInfo_returnNewUserInfo_whenProvided_validId(){
         //Arrange
         String validId = "valid-id";
         AppUser validUser = new AppUser();
         EditUserInfoDTO expectedUser = new EditUserInfoDTO();
         expectedUser.setId(validId);
+        validUser.setPassword("encrypted");
         when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(validUser);
         when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
         when(mockUserRepo.save(any())).thenReturn(validUser);
@@ -260,4 +305,30 @@ public class UserServiceTestSuite {
         assertEquals(actualUser.getId(), expectedUser.getNewFirstName(), expectedUser.getNewLastName());
     }
 
+    @Test
+    public void deleteUserByUsername_whenProvided_username(){
+        //Arrange
+        String validUsername = "username";
+        AppUser expectedResult = new AppUser();
+        expectedResult.setUsername(validUsername);
+        when(mockUserRepo.findAppUserByUsername(expectedResult.getUsername())).thenReturn(expectedResult);
+
+        //Act
+        sut.deleteUserByUsername(validUsername);
+
+        //Assert
+        verify(mockUserRepo, times(1)).delete(any());
+    }
+
+    @Test
+    public void findAppUserByUsername_throwsInvalidRequestException_whenProvided_invalidUsername(){
+        // Arrange
+        String invalidUsername = "";
+
+        // Act
+        InvalidRequestException e = assertThrows(InvalidRequestException.class,() -> sut.deleteUserByUsername(invalidUsername));
+
+        // Assert
+        verify(mockUserRepo,times(0)).delete(any());
+    }
 }

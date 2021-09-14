@@ -128,9 +128,9 @@ public class UserService {
 
         // Verify password
         String encryptedPass = passwordUtils.generateSecurePassword(editedUser.getPassword());
-/*        if(!encryptedPass.equals(updatedUser.getPassword()))
+        if(!encryptedPass.equals(updatedUser.getPassword()))
             throw new AuthenticationException("Invalid password provided!");
-*/
+
         // Update username
         updatedUser.setUsername(editedUser.getNewUsername());
 
@@ -144,9 +144,9 @@ public class UserService {
 
         // Verify password
         String encryptedPass = passwordUtils.generateSecurePassword(editedUser.getPassword());
- /*       if(!encryptedPass.equals(updatedUser.getPassword()))
+        if(!encryptedPass.equals(updatedUser.getPassword()))
             throw new AuthenticationException("Invalid password provided!");
-*/
+
         // Encrypt new password
         String newEncryptedPass = passwordUtils.generateSecurePassword(editedUser.getNewPassword());
 
@@ -167,8 +167,8 @@ public class UserService {
 
         // Verify password
         String encryptedPass = passwordUtils.generateSecurePassword(editedUser.getPassword());
-    //    if(!encryptedPass.equals(updatedUser.getPassword()))
-      //      throw new AuthenticationException("Invalid password provided!");
+        if(!encryptedPass.equals(updatedUser.getPassword()))
+            throw new AuthenticationException("Invalid password provided!");
 
         // Update username
         updatedUser.setEmail(editedUser.getNewEmail());
@@ -183,8 +183,8 @@ public class UserService {
 
         // Verify password
        String encryptedPass = passwordUtils.generateSecurePassword(editedUser.getPassword());
-   //     if(!encryptedPass.equals(updatedUser.getPassword()))
-     //       throw new AuthenticationException("Invalid password provided!");
+        if(!encryptedPass.equals(updatedUser.getPassword()))
+            throw new AuthenticationException("Invalid password provided!");
 
         // Update fields
         updatedUser.setFirstName(editedUser.getNewFirstName());
