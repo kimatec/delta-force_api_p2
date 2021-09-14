@@ -5,7 +5,6 @@ import com.revature.deltaforce.datasources.models.AppUser;
 import lombok.Data;
 
 import java.util.HashSet;
-import java.util.Objects;
 
 @Data
 public class AppUserDTO {
@@ -26,6 +25,4 @@ public class AppUserDTO {
         this.username = subject.getUsername();
         this.favTopics = subject.getFavTopics();
     }
-
-
 }
