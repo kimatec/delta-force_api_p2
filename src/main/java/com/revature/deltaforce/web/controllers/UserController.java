@@ -1,6 +1,7 @@
 package com.revature.deltaforce.web.controllers;
 
 import com.revature.deltaforce.datasources.models.AppUser;
+import com.revature.deltaforce.services.ArticleService;
 import com.revature.deltaforce.services.UserService;
 import com.revature.deltaforce.web.dtos.AppUserDTO;
 import com.revature.deltaforce.web.dtos.edituser.EditUserEmailDTO;
@@ -24,12 +25,15 @@ import java.util.Set;
 public class UserController {
 
     UserService userService;
+    ArticleService articleService;
     TokenGenerator tokenGenerator;
 
     @Autowired
-    public UserController(UserService userService, TokenGenerator tokenGenerator) {
+    public UserController(UserService userService, ArticleService articleService, TokenGenerator tokenGenerator) {
         this.userService = userService;
+        this.articleService = articleService;
         this.tokenGenerator = tokenGenerator;
+        this.articleService = articleService;
     }
 
     // Get a user by their ID
@@ -71,7 +75,9 @@ public class UserController {
     @Secured(allowedRoles = {})
     @IsMyAccount
     public Principal editUsername(@RequestBody @Valid EditUsernameDTO editedUser, HttpServletResponse resp){
+        AppUserDTO user = userService.findUserById(editedUser.getId());
         Principal principal = new Principal(userService.updateUsername(editedUser));
+        articleService.updateUsername(user.getUsername(), editedUser.getNewUsername());
         resp.setHeader(tokenGenerator.getJwtHeader(), tokenGenerator.createToken(principal));
         return principal;
     }
@@ -100,15 +106,16 @@ public class UserController {
         return new AppUserDTO(userService.updateUserInfo(editedUser));
     }
 
-
-
     // Delete User (admin only)
     @Secured(allowedRoles = {"admin"})
     @DeleteMapping(
             value = "{username}"
     )
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void deleteUserByUsername(@PathVariable String username){ userService.deleteUserByUsername(username);}
+    public void deleteUserByUsername(@PathVariable String username){
+        articleService.expungeUser(username);
+        userService.deleteUserByUsername(username);
+    }
 
 
     // User Favorites
