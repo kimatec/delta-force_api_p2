@@ -37,7 +37,7 @@ public class NewsController {
     }
 
     // example: http://localhost:5000/news/business
-    @GetMapping(value = "{category}", produces = "application/json")
+    @GetMapping(value = "category/{category}", produces = "application/json")
     @Secured(allowedRoles = {})
     public List<DeltaArticle> getNews(@PathVariable String category, HttpServletResponse resp) {
         String url;
