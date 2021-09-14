@@ -27,7 +27,7 @@ public class DeltaArticle implements Comparable<DeltaArticle>{
     private String title;
     private String description;
     private URL url;
-    private URL urlToImage;
+    private String urlToImage;
     private LocalDateTime publishedAt;
     private String content;
     private List<String> likes = new ArrayList<>();
