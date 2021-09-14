@@ -5,19 +5,16 @@ import com.revature.deltaforce.datasources.models.DeltaArticle;
 import com.revature.deltaforce.datasources.models.NewsResponse;
 import com.revature.deltaforce.services.ArticleService;
 import com.revature.deltaforce.web.util.security.Secured;
-import org.assertj.core.util.diff.Delta;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//TODO: Add auth to prevent web crawlers from pinging this and using up our key limit
 @RestController
 @RequestMapping("/news")
 public class NewsController {
@@ -69,6 +66,8 @@ public class NewsController {
                             .map(articleService::newsResponseHandler)
                             .flatMap(list -> list.stream())
                             .collect(Collectors.toList());
+
+        //If user has no favorite topics, render the top headlines, shuffled.
         if(!favTopicUrls.contains("top-headlines?country=us&apiKey="))
             Collections.shuffle(favArticles);
         return favArticles.subList(0,9);

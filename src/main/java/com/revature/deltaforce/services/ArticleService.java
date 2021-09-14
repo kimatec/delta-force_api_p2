@@ -1,7 +1,5 @@
 package com.revature.deltaforce.services;
 
-
-
 import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.datasources.models.Comment;
 import com.revature.deltaforce.datasources.models.DeltaArticle;
@@ -12,8 +10,6 @@ import com.revature.deltaforce.datasources.repositories.UserRepository;
 import com.revature.deltaforce.util.exceptions.ExternalDataSourceException;
 import com.revature.deltaforce.util.exceptions.ResourceNotFoundException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +22,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class ArticleService {
-    Logger logger = LoggerFactory.getLogger(this.getClass());
     private final UserRepository userRepo;
     private final ArticleRepository articleRepo;
 
@@ -43,7 +38,6 @@ public class ArticleService {
      * @return
      */
     public List<DeltaArticle> newsResponseHandler(List<ExternalAPIArticle> externalAPIArticles){
-
         if(externalAPIArticles.isEmpty()) {
             throw new ExternalDataSourceException("Bad Response: No articles received");
         }
@@ -66,12 +60,11 @@ public class ArticleService {
 
         //Return the list of requested DeltaArticles as persisted in our DB
         return requestedArticles.stream()
-                        .map(article -> article.getUrl())
-                        .map(articleRepo::findArticleByUrl)
-                        .distinct()
-                        .collect(Collectors.toList());
+                                .map(article -> article.getUrl())
+                                .map(articleRepo::findArticleByUrl)
+                                .distinct()
+                                .collect(Collectors.toList());
         }
-
 
     /**
      * Adds comment to article given by articleId, then returns the updated article
@@ -141,7 +134,6 @@ public class ArticleService {
                                    .limit(10)
                                    .collect(Collectors.toList());
     }
-
 
     /**
      * Maps each of your favorite topics to the corresponding NewsAPI URL, then returns the list of URLs as Strings. If
