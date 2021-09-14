@@ -16,7 +16,8 @@ public class LoggingAspect {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Pointcut("within(com.revature.deltaforce..*)")
-    public void logAll() {}
+    public void logAll() {
+    }
 
     @Before("logAll()")
     public void logMethodStart(JoinPoint jp) {

@@ -1,6 +1,5 @@
 package com.revature.deltaforce.web.util.security;
 
-
 import java.lang.annotation.*;
 
 @Documented
