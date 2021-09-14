@@ -12,8 +12,6 @@ import com.revature.deltaforce.datasources.repositories.UserRepository;
 import com.revature.deltaforce.util.exceptions.ExternalDataSourceException;
 import com.revature.deltaforce.util.exceptions.ResourceNotFoundException;
 
-
-import org.assertj.core.util.diff.Delta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +20,9 @@ import org.springframework.stereotype.Service;
 import java.net.URL;
 
 import java.util.ArrayList;
-
 import java.util.Arrays;
-
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class ArticleService {
@@ -49,34 +44,32 @@ public class ArticleService {
      */
     public List<DeltaArticle> newsResponseHandler(List<ExternalAPIArticle> externalAPIArticles){
 
-        if(externalAPIArticles.isEmpty())
-        {
+        if(externalAPIArticles.isEmpty()) {
             throw new ExternalDataSourceException("Bad Response: No articles received");
         }
+        //Create a list of 10 DeltaArticles
         List<DeltaArticle> requestedArticles = externalAPIArticles.stream()
-                                                            .limit(10)
-                                                            .map(DeltaArticle::new)
-                                                            .collect(Collectors.toList());
-
+                                                                  .limit(10)
+                                                                  .map(DeltaArticle::new)
+                                                                  .collect(Collectors.toList());
+        //Create a list of the URLs of the requested articles
         List<URL> deltaArticleUrls= externalAPIArticles.stream()
-                                                        .map(DeltaArticle::new)
-                                                        .map(article -> article.getUrl())
-                                                        .collect(Collectors.toList());
+                                                       .map(DeltaArticle::new)
+                                                       .map(article -> article.getUrl())
+                                                       .collect(Collectors.toList());
+
+        //Check which articles exist in our database by comparing URLs, then save only the unsaved articles
         List<DeltaArticle> existingArticles = articleRepo.findDeltaArticleByUrl(deltaArticleUrls);
-        logger.error("NUMBER OF EXISTING ARTICLES: " + existingArticles.size());
-        List<DeltaArticle> filteredArticles = requestedArticles.stream()
-                                                            .filter(article -> !existingArticles.contains(article))
-                                                            .collect(Collectors.toList());
-        logger.error("NUMBER OF FILTERED ARTICLES: " + filteredArticles.size());
+        requestedArticles.stream()
+                         .filter(article -> !existingArticles.contains(article))
+                         .forEach(articleRepo::save);
 
-        articleRepo.saveAll(filteredArticles);
-
-        //The list of URLs for the requested articles, so that we can re-fetch articles from our database after saving.
-        List<URL> requestedUrls = requestedArticles.stream()
-                .map(article -> article.getUrl())
-                .collect(Collectors.toList());
-
-        return articleRepo.findDeltaArticleByUrl(requestedUrls).stream().distinct().collect(Collectors.toList());
+        //Return the list of requested DeltaArticles as persisted in our DB
+        return requestedArticles.stream()
+                        .map(article -> article.getUrl())
+                        .map(articleRepo::findArticleByUrl)
+                        .distinct()
+                        .collect(Collectors.toList());
         }
 
 
@@ -153,7 +146,6 @@ public class ArticleService {
     /**
      * Maps each of your favorite topics to the corresponding NewsAPI URL, then returns the list of URLs as Strings. If
      * the user has no favorite topics, the returned list will have  a URL for the top headlines in the country.
-     *
      * @param username The username of the user requesting the articles.
      * @return
      */
@@ -169,7 +161,6 @@ public class ArticleService {
 
     /**
      * Replaces the former username in comments, likes, and dislikes with an updated username.
-     *
      * @param username The username being replaced
      * @param updateUsername  The updated username
      * @return
@@ -186,7 +177,6 @@ public class ArticleService {
 
     /**
      * Deleting a user's very existence
-     *
      * @param username The username of the user being deleted
      */
     public void expungeUser(String username){

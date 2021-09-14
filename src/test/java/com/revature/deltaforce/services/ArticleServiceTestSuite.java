@@ -14,7 +14,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,21 +40,20 @@ public class ArticleServiceTestSuite {
     public void afterEachTest() { sut = null; }
 
     // newsResponseHandler tests //TODO: Add mockRepo to these tests
-    @Test
-    public void newsResponseHandler_returnsDeltaArticles_whenNewsAPI_respondsAsExpected(){
-        // Arrange
-        List<ExternalAPIArticle> validRespList = new ArrayList<>();
-        validRespList.add(new ExternalAPIArticle());
-
-        List<DeltaArticle> expectedResult = new ArrayList<>();
-        expectedResult.add(new DeltaArticle());
-
-        // Act
-        List<DeltaArticle> actualResult = sut.newsResponseHandler(validRespList);
-
-        // Assert
-        assertEquals(expectedResult,actualResult);
-    }
+//    @Test
+//    public void newsResponseHandler_returnsDeltaArticles_whenNewsAPI_respondsAsExpected() throws MalformedURLException {
+//        // Arrange
+//        List<ExternalAPIArticle> validRespList = new ArrayList<>(Arrays.asList(new ExternalAPIArticle()));
+//        List<DeltaArticle> expectedResult = new ArrayList<>(Arrays.asList(new DeltaArticle()));
+//        List<URL> urlList = new ArrayList<>(Arrays.asList(new URL("url")));
+//
+//        when(mockArticleRepo.findDeltaArticleByUrl(urlList)).thenReturn()
+//        // Act
+//        List<DeltaArticle> actualResult = sut.newsResponseHandler(validRespList);
+//
+//        // Assert
+//        assertEquals(expectedResult,actualResult);
+//    }
 
     @Test
     public void newsResponseHandler_throwsException_whenNoNewsIsReceived(){
@@ -136,7 +138,7 @@ public class ArticleServiceTestSuite {
     public void expungeUser_removesUsers_likesDislikesAndComments(){
         // Arrange
         String username = "user";
-        Comment testComment = new Comment("url",username,"test");
+        Comment testComment = new Comment("id",username,"test");
         DeltaArticle article = new DeltaArticle();
         article.getLikes().add(username);
         article.addComment(testComment);
