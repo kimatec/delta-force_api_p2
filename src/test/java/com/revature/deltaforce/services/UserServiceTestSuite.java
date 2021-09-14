@@ -8,6 +8,10 @@ import com.revature.deltaforce.util.exceptions.InvalidRequestException;
 import com.revature.deltaforce.util.exceptions.ResourcePersistenceException;
 import com.revature.deltaforce.web.dtos.AppUserDTO;
 import com.revature.deltaforce.web.dtos.Principal;
+import com.revature.deltaforce.web.dtos.edituser.EditUserEmailDTO;
+import com.revature.deltaforce.web.dtos.edituser.EditUserInfoDTO;
+import com.revature.deltaforce.web.dtos.edituser.EditUserPasswordDTO;
+import com.revature.deltaforce.web.dtos.edituser.EditUsernameDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -179,6 +183,81 @@ public class UserServiceTestSuite {
 
         // Assert
         verify(mockUserRepo,times(0)).findById(invalidId);
+    }
+
+    //update User information - username
+    @Test
+    public void updateUsername_returnNewUsername_whenProvided_validId(){
+        //Arrange
+        String validId = "valid-id";
+        AppUser validUser = new AppUser();
+        EditUsernameDTO expectedUser = new EditUsernameDTO();
+        expectedUser.setId(validId);
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(validUser);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+        when(mockUserRepo.save(any())).thenReturn(validUser);
+
+        //Act
+        AppUser actualUser = sut.updateUsername(expectedUser);
+
+        //Assert
+        assertEquals(actualUser.getId(), expectedUser.getNewUsername());
+    }
+
+    @Test
+    public void updateUserPassword_returnNewPassword_whenProvided_ValidId(){
+        //Arrange
+        String validId = "valid-id";
+        AppUser validUser = new AppUser();
+        EditUserPasswordDTO expectedUser = new EditUserPasswordDTO();
+        expectedUser.setId(validId);
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(validUser);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+        when(mockUserRepo.save(any())).thenReturn(validUser);
+
+        //Act
+        AppUser actualUser = sut.updateUserPassword(expectedUser);
+
+        //Assert
+        assertEquals(actualUser.getId(), expectedUser.getNewPassword());
+
+    }
+
+    @Test
+    public void updateUserEmail_returnNewEmail_whenProvided_ValidId(){
+        //Arrange
+        String validId = "valid-id";
+        AppUser validUser = new AppUser();
+        EditUserEmailDTO expectedUser = new EditUserEmailDTO();
+        expectedUser.setId(validId);
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(validUser);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+        when(mockUserRepo.save(any())).thenReturn(validUser);
+
+        //Act
+        AppUser actualUser = sut.updateUserEmail(expectedUser);
+
+        //Assert
+        assertEquals(actualUser.getId(), expectedUser.getNewEmail());
+
+    }
+
+    @Test
+    public void updateUserInfo_returnNewUserInfo_whenProvided_validId(){
+        //Arrange
+        String validId = "valid-id";
+        AppUser validUser = new AppUser();
+        EditUserInfoDTO expectedUser = new EditUserInfoDTO();
+        expectedUser.setId(validId);
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(validUser);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+        when(mockUserRepo.save(any())).thenReturn(validUser);
+
+        //Act
+        AppUser actualUser = sut.updateUserInfo(expectedUser);
+
+        //Assert
+        assertEquals(actualUser.getId(), expectedUser.getNewFirstName(), expectedUser.getNewLastName());
     }
 
 }
