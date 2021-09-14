@@ -4,13 +4,16 @@ import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.datasources.models.DeltaArticle;
 import com.revature.deltaforce.datasources.models.NewsResponse;
 import com.revature.deltaforce.services.ArticleService;
+
 import com.revature.deltaforce.web.util.security.Secured;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,11 +36,15 @@ public class NewsController {
         this.restClient = restClient;
     }
 
-    // example: http://localhost:5000/news
-    @GetMapping
+    // example: http://localhost:5000/news/business
+    @GetMapping(value = "{category}", produces = "application/json")
     @Secured(allowedRoles = {})
-    public List<DeltaArticle> getNews() {
-        String url = newsServiceUrl + "top-headlines?country=us&category=business&apiKey=" + apiKey;
+    public List<DeltaArticle> getNews(@PathVariable String category, HttpServletResponse resp) {
+        String url;
+        if(category.equals("top"))
+            url = newsServiceUrl + "top-headlines?country=us&apiKey=" + apiKey;
+        else
+            url = newsServiceUrl + "top-headlines?country=us&category=" + category + "&apiKey=" + apiKey;
         NewsResponse newsResponse = restClient.getForObject(url, NewsResponse.class);
         return articleService.newsResponseHandler(newsResponse.getArticles());
     }
