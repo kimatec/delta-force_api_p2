@@ -36,7 +36,7 @@ public class NewsController {
         this.restClient = restClient;
     }
 
-    // example: http://localhost:5000/news/business
+    // example: http://localhost:5000/news/category/business
     @GetMapping(value = "category/{category}", produces = "application/json")
     @Secured(allowedRoles = {})
     public List<DeltaArticle> getNews(@PathVariable String category, HttpServletResponse resp) {
