@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +25,7 @@ public class NewsController {
     @Value("${api.key}")
     private String apiKey;
 
-    private final String newsServiceUrl = "https://newsapi.org/v2/";
+    private static final String newsServiceUrl = "https://newsapi.org/v2/";
 
     private final ArticleService articleService;
     private final RestTemplate restClient;
@@ -64,8 +65,8 @@ public class NewsController {
         List<String> favTopicUrls = articleService.getFavoriteUrls(username.getUsername());
         List<DeltaArticle> favArticles = favTopicUrls.stream()
                             .map(string -> newsServiceUrl+string+apiKey)
-                            .map(url -> restClient.getForObject(url, NewsResponse.class))
-                            .map(response -> articleService.newsResponseHandler(response.getArticles()))
+                            .map(url -> restClient.getForObject(url, NewsResponse.class).getArticles())
+                            .map(articleService::newsResponseHandler)
                             .flatMap(list -> list.stream())
                             .collect(Collectors.toList());
         if(!favTopicUrls.contains("top-headlines?country=us&apiKey="))
