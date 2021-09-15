@@ -3,6 +3,7 @@ package com.revature.deltaforce.web.util.security;
 import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.datasources.models.Comment;
 import com.revature.deltaforce.util.exceptions.AuthenticationException;
+import com.revature.deltaforce.util.exceptions.AuthorizationException;
 import com.revature.deltaforce.web.dtos.Principal;
 import com.revature.deltaforce.web.dtos.edituser.EditUserDTO;
 import io.jsonwebtoken.Claims;
@@ -51,7 +52,7 @@ public class SecurityAspect {
         if (!allowedRoles.isEmpty()) {
             // if the user's role is not listed, throw exception
             if (!allowedRoles.contains(principal.getRole()))
-                throw new AuthenticationException("A forbidden request was made by: " + principal.getUsername());
+                throw new AuthorizationException("A forbidden request was made by: " + principal.getUsername());
         }
         return pjp.proceed();
     }

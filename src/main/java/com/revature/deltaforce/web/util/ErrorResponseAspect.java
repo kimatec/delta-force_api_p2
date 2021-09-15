@@ -40,6 +40,10 @@ public class ErrorResponseAspect {
         return new ErrorResponse(401, e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleAuthorizationException(AuthorizationException e) {return new ErrorResponse(403, e.getMessage());}
+
     @ExceptionHandler({
             ResourceNotFoundException.class,
             ExternalDataSourceException.class,
