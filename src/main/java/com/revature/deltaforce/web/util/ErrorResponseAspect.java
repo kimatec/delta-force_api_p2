@@ -42,11 +42,16 @@ public class ErrorResponseAspect {
 
     @ExceptionHandler({
             ResourceNotFoundException.class,
-            ExternalDataSourceException.class
+            ExternalDataSourceException.class,
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleResourceNotFoundException(Exception e) {
         return new ErrorResponse(404, e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleResourceNotFoundException(NullPointerException e) {return new ErrorResponse(404, "ErrorResponseAspect-generated message: NullPointer Exception");
     }
 
     @ExceptionHandler
