@@ -1,6 +1,5 @@
 package com.revature.deltaforce.web.dtos.edituser;
 
-
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -22,6 +21,5 @@ public class EditUserPasswordDTO extends EditUserDTO {
     // Verify the user's existing password here
     @NotBlank(message = "Please verify your existing password.")
     private String password;
-
 
 }

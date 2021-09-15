@@ -85,7 +85,6 @@ public class SecurityAspect {
         return pjp.proceed();
     }
 
-
     public Optional<Principal> parseToken(HttpServletRequest req) {
         try {
             String header = req.getHeader(jwtConfig.getHeader());
@@ -110,7 +109,6 @@ public class SecurityAspect {
     }
 
     public Principal getPrincipal() {
-
         HttpServletRequest req = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         Principal principal = parseToken(req)
                 .orElseThrow(() ->
@@ -118,5 +116,4 @@ public class SecurityAspect {
                 );
         return principal;
     }
-
 }

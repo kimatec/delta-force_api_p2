@@ -32,7 +32,6 @@ public class TokenGenerator {
                 .signWith(jwtConfig.getSigAlg(), jwtConfig.getSigningKey());
 
         return jwtConfig.getPrefix() + tokenBuilder.compact();
-
     }
 
     public String getJwtHeader() {
@@ -42,5 +41,4 @@ public class TokenGenerator {
     public JwtConfig getJwtConfig() {
         return jwtConfig;
     }
-
 }

@@ -18,5 +18,4 @@ public class AppDriver {
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
-
 }

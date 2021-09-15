@@ -51,7 +51,6 @@ public class UserController {
         return principal;
     }
 
-
     // Edit user password, returns new principal and updates JWT
     // ex: PUT user/edit/password
     @PutMapping(
@@ -116,10 +115,8 @@ public class UserController {
         articleService.expungeUser(username);
         userService.deleteUserByUsername(username);
     }
-
-
+    
     // User Favorites
-
     // user/23i4on3ad4sd3fi3oj/faves?add=eggs
     @PostMapping(
             value = "{id}/faves",
