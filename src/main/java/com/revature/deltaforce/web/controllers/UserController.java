@@ -120,7 +120,7 @@ public class UserController {
 
     // User Favorites
 
-    // user/23i4on3ad4sd3fi3oj/faves?add=eggs
+    // user/23i4on3ad4sd3fi3oj/faves?add=Health
     @PostMapping(
             value = "{id}/faves",
             params = {"add"},
@@ -130,13 +130,13 @@ public class UserController {
         return userService.addTopic(id, topic);
     }
 
-    // user/23i4on3ad4sd3fi3oj/faves?remove=lost%20socks
+    // user/23i4on3ad4sd3fi3oj/faves?remove=Sports
     @DeleteMapping(
             value = "{id}/faves",
             params = {"remove"},
             produces = "application/json")
     @Secured(allowedRoles={})
-    public Set<String> removeFromFavesById(@PathVariable("id") String id, @RequestParam("add") String topic){
+    public Set<String> removeFromFavesById(@PathVariable("id") String id, @RequestParam("remove") String topic){
         return userService.removeTopic(id, topic);
     }
 
