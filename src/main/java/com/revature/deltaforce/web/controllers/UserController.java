@@ -24,14 +24,13 @@ import java.util.Set;
 @RequestMapping("/user")
 public class UserController {
 
-    UserService userService;
-    ArticleService articleService;
-    TokenGenerator tokenGenerator;
+    private final UserService userService;
+    private final ArticleService articleService;
+    private final TokenGenerator tokenGenerator;
 
     @Autowired
     public UserController(UserService userService, ArticleService articleService, TokenGenerator tokenGenerator) {
         this.userService = userService;
-        this.articleService = articleService;
         this.tokenGenerator = tokenGenerator;
         this.articleService = articleService;
     }
@@ -115,7 +114,7 @@ public class UserController {
         articleService.expungeUser(username);
         userService.deleteUserByUsername(username);
     }
-    
+
     // User Favorites
     // user/23i4on3ad4sd3fi3oj/faves?add=eggs
     @PostMapping(
@@ -127,14 +126,14 @@ public class UserController {
         return userService.addTopic(id, topic);
     }
 
-    // user/23i4on3ad4sd3fi3oj/faves?remove=lost%20socks
+    // user/23i4on3ad4sd3fi3oj/faves?remove=Sports
     @DeleteMapping(
             value = "{id}/faves",
             params = {"remove"},
             produces = "application/json")
+
     @Secured(allowedRoles = {})
-    public Set<String> removeFromFavesById(@PathVariable("id") String id, @RequestParam("add") String topic) {
+    public Set<String> removeFromFavesById(@PathVariable("id") String id, @RequestParam("remove") String topic) {
         return userService.removeTopic(id, topic);
     }
-
 }

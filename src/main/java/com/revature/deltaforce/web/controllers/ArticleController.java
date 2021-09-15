@@ -9,9 +9,7 @@ import com.revature.deltaforce.web.util.security.IsMyDislike;
 import com.revature.deltaforce.web.util.security.IsMyLike;
 import com.revature.deltaforce.web.util.security.Secured;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 
@@ -21,17 +19,13 @@ public class ArticleController {
 
     private final String newsServiceUrl = "https://newsapi.org/v2/";
     private final ArticleService articleService;
-    private final RestTemplate restClient;
-
-    @Value("${api.key}")
-    private String apiKey;
 
     @Autowired
-    public ArticleController(ArticleService articleService, RestTemplate restClient) {
+    public ArticleController(ArticleService articleService) {
         this.articleService = articleService;
-        this.restClient = restClient;
     }
 
+    // Example: /article/comment
     @PostMapping(
             value = "/comment",
             consumes = "application/json",
