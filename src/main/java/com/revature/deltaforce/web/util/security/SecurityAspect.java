@@ -67,7 +67,7 @@ public class SecurityAspect {
     @Around("@annotation(com.revature.deltaforce.web.util.security.IsMyComment)")
     public Object isMyComment(ProceedingJoinPoint pjp) throws Throwable {
         if (!((Comment) pjp.getArgs()[0]).getUsername().equals(getPrincipal().getUsername()))
-            throw new AuthenticationException("You can't update a comment you didn't write!");
+            throw new AuthenticationException("You can't update a comment that isn't yours!");
         return pjp.proceed();
     }
 

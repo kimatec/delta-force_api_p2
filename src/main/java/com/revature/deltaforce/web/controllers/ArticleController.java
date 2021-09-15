@@ -35,6 +35,7 @@ public class ArticleController {
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
+    @IsMyComment
     public DeltaArticle addComment(@RequestBody @Valid Comment comment) {
         return articleService.addComment(comment);
     }
