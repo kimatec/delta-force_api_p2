@@ -25,6 +25,7 @@ public class ArticleController {
 
     @Autowired
     public ArticleController(ArticleService articleService){
+
         this.articleService = articleService;
        ;
     }
@@ -34,7 +35,9 @@ public class ArticleController {
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
-    public DeltaArticle addComment(@RequestBody @Valid Comment comment){ return articleService.addComment(comment);}
+    public DeltaArticle addComment(@RequestBody @Valid Comment comment) {
+        return articleService.addComment(comment);
+    }
 
     // Example: /article/like?id=613ba397a7763649c6fa1ed7
     @PostMapping(
@@ -44,7 +47,9 @@ public class ArticleController {
             produces = "application/json")
     @Secured(allowedRoles = {})
     @IsMyLike
-    public DeltaArticle likeArticle(@RequestBody AppUser username, @RequestParam("id") String articleId){ return articleService.addLike(username.getUsername(), articleId);}
+    public DeltaArticle likeArticle(@RequestBody AppUser username, @RequestParam("id") String articleId) {
+        return articleService.addLike(username.getUsername(), articleId);
+    }
 
     // Example: /article/dislike?id=613ba397a7763649c6fa1ed7
     @PostMapping(
@@ -54,11 +59,14 @@ public class ArticleController {
             produces = "application/json")
     @Secured(allowedRoles = {})
     @IsMyDislike
-    public DeltaArticle dislikeArticle(@RequestBody AppUser username, @RequestParam("id") String articleId){ return articleService.addDislike(username.getUsername(), articleId);}
+    public DeltaArticle dislikeArticle(@RequestBody AppUser username, @RequestParam("id") String articleId) {
+        return articleService.addDislike(username.getUsername(), articleId);
+    }
 
     @DeleteMapping(value = "/comment", consumes = "application/json", produces = "application/json")
     @Secured(allowedRoles = {})
     @IsMyComment
+
     public DeltaArticle removeComment(@RequestBody Comment comment) {return articleService.removeComment(comment);}
 
 }

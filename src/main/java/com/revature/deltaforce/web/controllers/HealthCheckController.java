@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthCheckController {
 
     @GetMapping(produces = "application/json")
-    public String health(){return "{\"status\": \"UP\"}";}
+    public String health() {
+        return "{\"status\": \"UP\"}";
+    }
 
 }

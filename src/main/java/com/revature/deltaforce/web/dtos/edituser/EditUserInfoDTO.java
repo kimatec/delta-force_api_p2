@@ -6,9 +6,9 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 
 /**
- *  DTO for packaging new user fields sent from the front end.
- *  User will be expected to verify their identity with their existing password.
- *  Named "Info" in the event we would like to allow users to provide more information.
+ * DTO for packaging new user fields sent from the front end.
+ * User will be expected to verify their identity with their existing password.
+ * Named "Info" in the event we would like to allow users to provide more information.
  **/
 @Data
 public class EditUserInfoDTO extends EditUserDTO {
