@@ -46,6 +46,7 @@ public class UserController {
     @PostMapping(consumes = "application/json", produces = "application/json")
     public Principal registerNewUser(@RequestBody @Valid AppUser newUser, HttpServletResponse resp) {
         Principal principal = new Principal(userService.registerNewUser(newUser));
+        resp.setStatus(201);
         resp.setHeader(tokenGenerator.getJwtHeader(), tokenGenerator.createToken(principal));
         return principal;
     }

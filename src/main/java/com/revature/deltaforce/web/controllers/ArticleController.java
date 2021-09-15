@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
@@ -36,8 +37,10 @@ public class ArticleController {
             produces = "application/json")
     @Secured(allowedRoles = {})
     @IsMyComment
-    public DeltaArticle addComment(@RequestBody @Valid Comment comment) {
+    public DeltaArticle addComment(@RequestBody @Valid Comment comment, HttpServletResponse response) {
+        response.setStatus(201);
         return articleService.addComment(comment);
+
     }
 
     // Example: /article/like?id=613ba397a7763649c6fa1ed7
