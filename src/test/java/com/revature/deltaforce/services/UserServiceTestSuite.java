@@ -155,11 +155,27 @@ public class UserServiceTestSuite {
         //Assert
         assertEquals(actual, expected.getFavTopics());
 
-
     }
 
     @Test
     public void addTopic_throwsException_whenProvided_existingTopic(){
+        //Arrange
+        String validId = "valid-id";
+        String existing = "original";
+        String duplicate = "original";
+        AppUser validUser = new AppUser();
+        validUser.setId(validId);
+        HashSet<String> userFav = new HashSet<>();
+        userFav.add(existing);
+        validUser.setFavTopics(userFav);
+        when(mockUserRepo.findAppUserById(validUser.getId())).thenReturn(validUser);
+
+
+        //Act
+        ResourcePersistenceException e = assertThrows(ResourcePersistenceException.class, () -> sut.addTopic(validId, duplicate));
+
+        //Assert
+        assertEquals("This topic is already on the user's favorite list!", e.getMessage());
 
     }
 
@@ -188,6 +204,22 @@ public class UserServiceTestSuite {
 
     @Test
     public void removeTopic_throwsException_whenProvided_nonexistentTopic(){
+        //Arrange
+        String validId = "valid-id";
+        String validTopic = " ";
+        AppUser expected = new AppUser();
+        expected.setId(validId);
+        HashSet<String> userFav = new HashSet<>();
+        userFav.add(validTopic);
+        when(mockUserRepo.findAppUserById(expected.getId())).thenReturn(expected);
+        when(mockUserRepo.save(expected)).thenReturn(expected);
+
+        //Act
+        ResourcePersistenceException e = assertThrows(ResourcePersistenceException.class, () -> sut.removeTopic(validId, validTopic));
+
+        //Assert
+        assertEquals("This topic is not the user's favorite list!", e.getMessage());
+
 
     }
 
@@ -241,6 +273,27 @@ public class UserServiceTestSuite {
     }
 
     @Test
+    public void getNewUsername_throwsResourcePersistenceException_whenProvided_usernameTaken(){
+        //Arrange
+
+        String existingUsername = "original";
+        String duplicateUsername = "original";
+        AppUser validUser = new AppUser();
+        EditUsernameDTO expectedUser = new EditUsernameDTO();
+        expectedUser.setNewUsername(duplicateUsername);
+        validUser.setUsername(existingUsername);
+        when(mockUserRepo.findAppUserByUsername(duplicateUsername)).thenReturn(validUser);
+
+        //Act
+        ResourcePersistenceException e = assertThrows(ResourcePersistenceException.class, () -> sut.updateUsername(expectedUser));
+
+        //Assert
+        assertEquals("This username is already taken!", e.getMessage());
+
+    }
+
+
+    @Test
     public void updateUserPassword_returnNewPassword_whenProvided_ValidId(){
         //Arrange
         String validId = "valid-id";
@@ -282,6 +335,21 @@ public class UserServiceTestSuite {
 
     @Test
     public void getNewEmail_throwsResourcePersistenceException_whenProvided_emailTaken(){
+        //Arrange
+
+        String existingEmail = "original";
+        String duplicateEmail = "original";
+        AppUser validUser = new AppUser();
+        EditUserEmailDTO expectedUser = new EditUserEmailDTO();
+        expectedUser.setNewEmail(duplicateEmail);
+        validUser.setEmail(existingEmail);
+        when(mockUserRepo.findAppUserByEmail(duplicateEmail)).thenReturn(validUser);
+
+        //Act
+        ResourcePersistenceException e = assertThrows(ResourcePersistenceException.class, () -> sut.updateUserEmail(expectedUser));
+
+        //Assert
+        assertEquals("This email is already taken!", e.getMessage());
 
     }
 
