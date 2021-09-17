@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +34,7 @@ public class NewsController {
     // example: http://localhost:5000/news/category/business
     @GetMapping(value = "category/{category}", produces = "application/json")
     @Secured(allowedRoles = {})
-    public List<DeltaArticle> getNews(@PathVariable String category, HttpServletResponse resp) {
+    public List<DeltaArticle> getNews(@PathVariable String category) {
         String url;
         if (category.equals("top"))
             url = newsServiceUrl + "top-headlines?country=us&apiKey=" + apiKey;
@@ -78,5 +76,4 @@ public class NewsController {
             Collections.shuffle(favArticles);
         return favArticles.subList(0, 9);
     }
-
 }

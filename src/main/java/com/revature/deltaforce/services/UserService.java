@@ -1,6 +1,5 @@
 package com.revature.deltaforce.services;
 
-
 import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.datasources.repositories.UserRepository;
 import com.revature.deltaforce.util.PasswordUtils;
@@ -53,9 +52,8 @@ public class UserService {
         String encryptedPass = passwordUtils.generateSecurePassword(password);
         AppUser authUser = userRepo.findAppUserByUsernameAndPassword(username, encryptedPass);
 
-        if (authUser == null) {
+        if (authUser == null)
             throw new AuthenticationException("Invalid credentials given!");
-        }
 
         return new Principal(authUser);
     }
@@ -67,27 +65,23 @@ public class UserService {
      * @return Principal insertedUser - new principal object for creating a session
      */
     public AppUser registerNewUser(AppUser newUser) {
-        if (userRepo.findAppUserByUsername(newUser.getUsername()) != null) {
+        if (userRepo.findAppUserByUsername(newUser.getUsername()) != null)
             throw new ResourcePersistenceException("Provided username is already taken!");
-        }
-        if (userRepo.findAppUserByEmail(newUser.getEmail()) != null) {
+        if (userRepo.findAppUserByEmail(newUser.getEmail()) != null)
             throw new ResourcePersistenceException("Provided email is already taken!");
-        }
+
         newUser.setPassword(passwordUtils.generateSecurePassword(newUser.getPassword()));
         return userRepo.save(newUser);
     }
 
     // Attempts to find a user with the provided id
     public AppUserDTO findUserById(String id) {
-
-        if (id == null || id.trim().isEmpty()) {
+        if (id == null || id.trim().isEmpty())
             throw new InvalidRequestException("Invalid id provided");
-        }
 
         return userRepo.findById(id)
                 .map(AppUserDTO::new)
                 .orElseThrow(() -> new ResourceNotFoundException("No user found with provided Id."));
-
     }
 
     // Adds a topic to a user's favorites.
@@ -201,7 +195,5 @@ public class UserService {
         if (userToDelete == null)
             throw new InvalidRequestException("No user found with provided username.");
         userRepo.delete(userToDelete);
-
     }
-
 }

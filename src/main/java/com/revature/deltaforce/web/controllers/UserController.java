@@ -118,7 +118,6 @@ public class UserController {
     }
 
     // User Favorites
-
     // user/23i4on3ad4sd3fi3oj/faves?add=Health
     @PostMapping(
             value = "{id}/faves",
@@ -134,10 +133,8 @@ public class UserController {
             value = "{id}/faves",
             params = {"remove"},
             produces = "application/json")
-
-    @Secured(allowedRoles={})
-    public Set<String> removeFromFavesById(@PathVariable("id") String id, @RequestParam("remove") String topic){
+    @Secured(allowedRoles = {})
+    public Set<String> removeFromFavesById(@PathVariable("id") String id, @RequestParam("remove") String topic) {
         return userService.removeTopic(id, topic);
     }
-
 }

@@ -23,7 +23,5 @@ public class EditUserEmailDTO extends EditUserDTO {
     // Verify the user's existing password here
     @NotBlank(message = "Please verify your existing password.")
     private String password;
-
-
 }
 

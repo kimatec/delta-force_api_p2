@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.*;
 
-
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -25,11 +24,10 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @Autowired
-    public ArticleController(ArticleService articleService){
-
+    public ArticleController(ArticleService articleService) {
         this.articleService = articleService;
-       ;
     }
+
     // Example: /article/comment
     @PostMapping(
             value = "/comment",
@@ -40,7 +38,6 @@ public class ArticleController {
     public DeltaArticle addComment(@RequestBody @Valid Comment comment, HttpServletResponse response) {
         response.setStatus(201);
         return articleService.addComment(comment);
-
     }
 
     // Example: /article/like?id=613ba397a7763649c6fa1ed7
@@ -71,6 +68,7 @@ public class ArticleController {
     @Secured(allowedRoles = {})
     @IsMyComment
 
-    public DeltaArticle removeComment(@RequestBody Comment comment) {return articleService.removeComment(comment);}
-
+    public DeltaArticle removeComment(@RequestBody Comment comment) {
+        return articleService.removeComment(comment);
+    }
 }
