@@ -273,6 +273,32 @@ public class UserServiceTestSuite {
     }
 
     @Test
+    public void updateUsername_throwsException_whenProvidedInvalidPassword(){
+        //Arrange
+
+        String invalidPass = "wrong-password";
+        String existingPass = "original";
+
+        AppUser user = new AppUser();
+        EditUsernameDTO expectedUser = new EditUsernameDTO();
+
+        expectedUser.setPassword(invalidPass);
+        expectedUser.setNewUsername("validUsername");
+        user.setPassword(existingPass);
+
+        when(mockUserRepo.findAppUserByUsername(expectedUser.getNewUsername())).thenReturn(null);
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(user);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+
+        //Act
+        AuthenticationException e = assertThrows(AuthenticationException.class, () -> sut.updateUsername(expectedUser));
+
+        //Assert
+        assertEquals("Invalid password provided!", e.getMessage());
+
+    }
+
+    @Test
     public void getNewUsername_throwsResourcePersistenceException_whenProvided_usernameTaken(){
         //Arrange
 
