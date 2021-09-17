@@ -59,7 +59,7 @@ public class NewsController {
     @GetMapping("/popular")
     @Secured(allowedRoles = {})
     public List<DeltaArticle> popularArticles() {
-        return articleService.getPopularArticles();
+        return articleService.getPopularArticles().stream().sorted().collect(Collectors.toList());
     }
 
     // Fetches 10 articles from each of your favorite topics, shuffles them, then returns 10 articles.

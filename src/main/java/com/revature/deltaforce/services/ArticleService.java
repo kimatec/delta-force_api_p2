@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -134,6 +135,7 @@ public class ArticleService {
      */
     public List<DeltaArticle> getPopularArticles() {
         return articleRepo.findAll().stream()
+                .filter(article -> article.getPublishedAt().isAfter(LocalDateTime.now().minusHours(24)))
                 .sorted()
                 .limit(10)
                 .collect(Collectors.toList());
