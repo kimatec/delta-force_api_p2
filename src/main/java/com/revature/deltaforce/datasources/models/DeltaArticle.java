@@ -78,8 +78,9 @@ public class DeltaArticle implements Comparable<DeltaArticle> {
     public int compareTo(DeltaArticle deltaArticle) {
         return Comparator.comparing(DeltaArticle::getLikes, (a1, a2) -> Integer.compare(a2.size(), a1.size()))
                 .thenComparing(DeltaArticle::getComments, (c1, c2) -> Integer.compare(c2.size(), c1.size()))
+                .thenComparing(DeltaArticle::getDislikes, (e1,e2) -> Integer.compare(e2.size(), e1.size()))
                 .thenComparing(DeltaArticle::getPublishedAt, (d1,d2) -> {
-                    if(d1.isAfter(d2))
+                    if(d2.isAfter(d1))
                         return 1;
                     else
                         return -1;
