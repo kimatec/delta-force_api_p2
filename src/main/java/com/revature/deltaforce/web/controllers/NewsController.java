@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,7 +52,7 @@ public class NewsController {
     public List<DeltaArticle> searchNews(@RequestParam(required = true) String search) {
         String url = newsServiceUrl + "everything?q=" + search + "&apiKey=" + apiKey;
         NewsResponse newsResponse = restClient.getForObject(url, NewsResponse.class);
-        return articleService.newsResponseHandler(newsResponse.getArticles());
+        return articleService.newsResponseHandler(newsResponse.getArticles()).stream().sorted().collect(Collectors.toList());
     }
 
     // example: http://localhost:5000/news/popular

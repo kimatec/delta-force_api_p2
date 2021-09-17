@@ -41,6 +41,7 @@ public class ArticleService {
         }
         //Create a list of 10 DeltaArticles
         List<DeltaArticle> requestedArticles = externalAPIArticles.stream()
+                .sorted()
                 .limit(10)
                 .map(DeltaArticle::new)
                 .collect(Collectors.toList());
