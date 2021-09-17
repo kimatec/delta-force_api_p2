@@ -31,6 +31,5 @@ public class AuthController {
         Principal principal = userService.login(credentials.getUsername(), credentials.getPassword());
         resp.setHeader(tokenGenerator.getJwtHeader(), tokenGenerator.createToken(principal));
         return principal;
-
     }
 }

@@ -8,11 +8,8 @@ import com.revature.deltaforce.web.util.security.IsMyComment;
 import com.revature.deltaforce.web.util.security.IsMyDislike;
 import com.revature.deltaforce.web.util.security.IsMyLike;
 import com.revature.deltaforce.web.util.security.Secured;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.web.bind.annotation.*;
-
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -25,11 +22,11 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @Autowired
-    public ArticleController(ArticleService articleService){
+    public ArticleController(ArticleService articleService) {
 
         this.articleService = articleService;
-       ;
     }
+
     // Example: /article/comment
     @PostMapping(
             value = "/comment",
@@ -71,6 +68,8 @@ public class ArticleController {
     @Secured(allowedRoles = {})
     @IsMyComment
 
-    public DeltaArticle removeComment(@RequestBody Comment comment) {return articleService.removeComment(comment);}
+    public DeltaArticle removeComment(@RequestBody Comment comment) {
+        return articleService.removeComment(comment);
+    }
 
 }

@@ -12,7 +12,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,5 +77,4 @@ public class NewsController {
             Collections.shuffle(favArticles);
         return favArticles.subList(0, 9);
     }
-
 }
