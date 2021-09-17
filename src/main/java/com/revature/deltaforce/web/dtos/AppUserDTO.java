@@ -1,6 +1,5 @@
 package com.revature.deltaforce.web.dtos;
 
-
 import com.revature.deltaforce.datasources.models.AppUser;
 import lombok.Data;
 
@@ -10,7 +9,6 @@ import java.util.HashSet;
 public class AppUserDTO {
 
     private String id;
-
     private String firstName;
     private String lastName;
     private String email;

@@ -39,13 +39,13 @@ public class SecurityAspect {
 
     @Around("@annotation(com.revature.deltaforce.web.util.security.Secured)")
     public Object secureEndpoint(ProceedingJoinPoint pjp) throws Throwable {
-
         List<String> allowedRoles = Arrays.asList(
                 ((MethodSignature) pjp.getSignature())
                         .getMethod()
                         .getAnnotation(Secured.class)
                         .allowedRoles()
         );
+
         Principal principal = getPrincipal();
 
         // Allowed Roles is empty when all roles are permitted
@@ -111,7 +111,6 @@ public class SecurityAspect {
     }
 
     public Principal getPrincipal() {
-
         HttpServletRequest req = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         Principal principal = parseToken(req)
                 .orElseThrow(() ->
@@ -119,5 +118,4 @@ public class SecurityAspect {
                 );
         return principal;
     }
-
 }

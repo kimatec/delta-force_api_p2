@@ -12,5 +12,4 @@ public class Credentials {
 
     @NotBlank(message = "Password can not be null or blank")
     private String password;
-
 }

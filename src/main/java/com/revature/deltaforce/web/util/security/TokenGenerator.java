@@ -19,7 +19,6 @@ public class TokenGenerator {
     }
 
     public String createToken(Principal subject) {
-
         long now = System.currentTimeMillis();
 
         JwtBuilder tokenBuilder = Jwts.builder()
@@ -32,9 +31,7 @@ public class TokenGenerator {
                 .signWith(jwtConfig.getSigAlg(), jwtConfig.getSigningKey());
 
         return jwtConfig.getPrefix() + tokenBuilder.compact();
-
     }
-
     public String getJwtHeader() {
         return jwtConfig.getHeader();
     }
@@ -42,5 +39,4 @@ public class TokenGenerator {
     public JwtConfig getJwtConfig() {
         return jwtConfig;
     }
-
 }
