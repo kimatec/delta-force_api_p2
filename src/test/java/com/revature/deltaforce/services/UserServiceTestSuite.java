@@ -340,6 +340,32 @@ public class UserServiceTestSuite {
     }
 
     @Test
+    public void updateUserPassword_throwsException_whenProvidedInvalidPassword(){
+        //Arrange
+
+        String invalidPass = "wrong-password";
+        String existingPass = "original";
+
+        AppUser user = new AppUser();
+        EditUserPasswordDTO expectedUser = new EditUserPasswordDTO();
+
+        expectedUser.setPassword(invalidPass);
+        expectedUser.setNewPassword("validPass");
+        user.setPassword(existingPass);
+
+        when(mockUserRepo.findAppUserByUsername(expectedUser.getNewPassword())).thenReturn(null);
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(user);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+
+        //Act
+        AuthenticationException e = assertThrows(AuthenticationException.class, () -> sut.updateUserPassword(expectedUser));
+
+        //Assert
+        assertEquals("Invalid password provided!", e.getMessage());
+
+    }
+
+    @Test
     public void updateUserEmail_returnNewEmail_whenProvided_ValidId(){
         //Arrange
         String validId = "valid-id";
@@ -356,6 +382,32 @@ public class UserServiceTestSuite {
 
         //Assert
         assertEquals(actualUser.getId(), expectedUser.getNewEmail());
+
+    }
+
+    @Test
+    public void updateUserEmail_throwsException_whenProvidedInvalidPassword(){
+        //Arrange
+
+        String invalidPass = "wrong-password";
+        String existingPass = "original";
+
+        AppUser user = new AppUser();
+        EditUserEmailDTO expectedUser = new EditUserEmailDTO();
+
+        expectedUser.setPassword(invalidPass);
+        expectedUser.setNewEmail("validEmail");
+        user.setPassword(existingPass);
+
+        when(mockUserRepo.findAppUserByUsername(expectedUser.getNewEmail())).thenReturn(null);
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(user);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+
+        //Act
+        AuthenticationException e = assertThrows(AuthenticationException.class, () -> sut.updateUserEmail(expectedUser));
+
+        //Assert
+        assertEquals("Invalid password provided!", e.getMessage());
 
     }
 
@@ -397,6 +449,32 @@ public class UserServiceTestSuite {
 
         //Assert
         assertEquals(actualUser.getId(), expectedUser.getNewFirstName(), expectedUser.getNewLastName());
+    }
+
+    @Test
+    public void updateUserInfo_throwsException_whenProvidedInvalidPassword(){
+        //Arrange
+
+        String invalidPass = "wrong-password";
+        String existingPass = "original";
+
+        AppUser user = new AppUser();
+        EditUserInfoDTO expectedUser = new EditUserInfoDTO();
+
+        expectedUser.setPassword(invalidPass);
+        expectedUser.setId("validId");
+        user.setPassword(existingPass);
+
+        when(mockUserRepo.findAppUserByUsername(expectedUser.getId())).thenReturn(null);
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(user);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+
+        //Act
+        AuthenticationException e = assertThrows(AuthenticationException.class, () -> sut.updateUserInfo(expectedUser));
+
+        //Assert
+        assertEquals("Invalid password provided!", e.getMessage());
+
     }
 
     @Test
