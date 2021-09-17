@@ -86,7 +86,6 @@ public class SecurityAspect {
         return pjp.proceed();
     }
 
-
     public Optional<Principal> parseToken(HttpServletRequest req) {
         try {
             String header = req.getHeader(jwtConfig.getHeader());

@@ -26,7 +26,6 @@ public class JwtConfig {
     private final SignatureAlgorithm sigAlg = SignatureAlgorithm.HS256;
     private Key signingKey;
 
-
     @PostConstruct
     public void createSigningKey() {
         byte[] secretBytes = DatatypeConverter.parseBase64Binary(this.secret);
@@ -56,5 +55,4 @@ public class JwtConfig {
     public Key getSigningKey() {
         return signingKey;
     }
-
 }

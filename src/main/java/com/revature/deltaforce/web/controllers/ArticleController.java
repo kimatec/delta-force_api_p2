@@ -8,7 +8,9 @@ import com.revature.deltaforce.web.util.security.IsMyComment;
 import com.revature.deltaforce.web.util.security.IsMyDislike;
 import com.revature.deltaforce.web.util.security.IsMyLike;
 import com.revature.deltaforce.web.util.security.Secured;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -23,7 +25,6 @@ public class ArticleController {
 
     @Autowired
     public ArticleController(ArticleService articleService) {
-
         this.articleService = articleService;
     }
 
@@ -37,7 +38,6 @@ public class ArticleController {
     public DeltaArticle addComment(@RequestBody @Valid Comment comment, HttpServletResponse response) {
         response.setStatus(201);
         return articleService.addComment(comment);
-
     }
 
     // Example: /article/like?id=613ba397a7763649c6fa1ed7
@@ -71,5 +71,4 @@ public class ArticleController {
     public DeltaArticle removeComment(@RequestBody Comment comment) {
         return articleService.removeComment(comment);
     }
-
 }

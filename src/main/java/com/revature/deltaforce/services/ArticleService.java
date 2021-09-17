@@ -50,13 +50,11 @@ public class ArticleService {
                 .map(DeltaArticle::new)
                 .map(article -> article.getUrl())
                 .collect(Collectors.toList());
-
         //Check which articles exist in our database by comparing URLs, then save only the unsaved articles
         List<DeltaArticle> existingArticles = articleRepo.findDeltaArticleByUrl(deltaArticleUrls);
         requestedArticles.stream()
                 .filter(article -> !existingArticles.contains(article))
                 .forEach(articleRepo::save);
-
         //Return the list of requested DeltaArticles as persisted in our DB
         return requestedArticles.stream()
                 .map(article -> article.getUrl())
@@ -86,8 +84,10 @@ public class ArticleService {
      */
     public DeltaArticle removeComment(Comment comment) {
         DeltaArticle deltaArticle = articleRepo.findArticleById(comment.getArticleId());
+
         if (!deltaArticle.getComments().contains(comment))
             throw new ResourceNotFoundException("Comment not found.");
+
         deltaArticle.removeComment(comment);
         articleRepo.save(deltaArticle);
         return deltaArticle;
@@ -102,10 +102,12 @@ public class ArticleService {
      */
     public DeltaArticle addLike(String username, String articleId) {
         DeltaArticle deltaArticle = articleRepo.findArticleById(articleId);
+
         if (deltaArticle.getLikes().contains(username))
             deltaArticle.getLikes().remove(username);
         else
             deltaArticle.getLikes().add(username);
+
         deltaArticle.getDislikes().remove(username);
         return articleRepo.save(deltaArticle);
     }
@@ -119,10 +121,12 @@ public class ArticleService {
      */
     public DeltaArticle addDislike(String username, String articleId) {
         DeltaArticle deltaArticle = articleRepo.findArticleById(articleId);
+
         if (deltaArticle.getDislikes().contains(username))
             deltaArticle.getDislikes().remove(username);
         else
             deltaArticle.getDislikes().add(username);
+
         deltaArticle.getLikes().remove(username);
         return articleRepo.save(deltaArticle);
     }
@@ -148,12 +152,14 @@ public class ArticleService {
      */
     public List<String> getFavoriteUrls(String username) {
         AppUser user = userRepo.findAppUserByUsername(username);
+
         if (!user.getFavTopics().isEmpty()) {
             return user.getFavTopics().stream()
                     .map(string -> "top-headlines?country=us&category=" + string + "&apiKey=")
                     .collect(Collectors.toList());
-        } else
+        } else {
             return new ArrayList<>(Arrays.asList("top-headlines?country=us&apiKey="));
+        }
     }
 
     /**

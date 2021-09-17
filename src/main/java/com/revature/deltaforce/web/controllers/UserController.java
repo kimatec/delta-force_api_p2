@@ -51,6 +51,7 @@ public class UserController {
         return principal;
     }
 
+
     // Edit user password, returns new principal and updates JWT
     // ex: PUT user/edit/password
     @PutMapping(
