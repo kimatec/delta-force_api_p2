@@ -17,6 +17,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -171,12 +172,13 @@ public class ArticleServiceTestSuite {
     }
 
     @Test
-    public void getPopularArticles_returnsAListofTenArticles_whenCalled(){
+    public void getPopularArticles_returnsAListofTenArticles_whenCalled() throws MalformedURLException {
         //Arrange
         List<DeltaArticle> input = new ArrayList<>();
         for(int i=0; i<20; i++)
-            input.add(new DeltaArticle());
+            input.add(new DeltaArticle(new ExternalAPIArticle(new Source(),"author","title","desription", new URL("   http://www.example.com/docs/resource1.html"), "urltoimage", LocalDateTime.now(), "content")));
         when(mockArticleRepo.findAll()).thenReturn(input);
+
         //Act
         List<DeltaArticle> actualResult = sut.getPopularArticles();
         //Assert
