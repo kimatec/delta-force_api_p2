@@ -64,6 +64,9 @@ public class NewsController {
     @GetMapping("/dashboard")
     public List<DeltaArticle> favTopics(@RequestBody AppUser username) {
         List<String> favTopicUrls = articleService.getFavoriteUrls(username.getUsername());
+
+        //If user has favTopics, get articles for each category and return a single list of all the Delta Articles. Otherwise,
+        //get top headlines.
         List<DeltaArticle> favArticles = favTopicUrls.stream()
                 .map(string -> newsServiceUrl + string + apiKey)
                 .map(url -> restClient.getForObject(url, NewsResponse.class).getArticles())
@@ -71,9 +74,9 @@ public class NewsController {
                 .flatMap(list -> list.stream())
                 .collect(Collectors.toList());
 
-        //If user has no favorite topics, render the top headlines, shuffled.
+        //If user has favorite topics, shuffle the headlines so the feed will show articles from different categories.
         if (!favTopicUrls.contains("top-headlines?country=us&apiKey="))
             Collections.shuffle(favArticles);
-        return favArticles.subList(0, 9);
+        return favArticles.subList(0, 9).stream().sorted().collect(Collectors.toList());
     }
 }

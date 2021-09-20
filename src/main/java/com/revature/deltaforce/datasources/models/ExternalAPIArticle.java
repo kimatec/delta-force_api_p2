@@ -35,7 +35,7 @@ public class ExternalAPIArticle implements Comparable<ExternalAPIArticle> {
     @Override
     public int compareTo(ExternalAPIArticle article) {
         return Comparator.comparing(ExternalAPIArticle::getPublishedAt, (a1, a2) -> {
-                    if (a1.isAfter(a2))
+                    if (a2.isAfter(a1))
                         return 1;
                     else
                         return -1;
