@@ -177,8 +177,8 @@ public class UserService {
         AppUser updatedUser = userRepo.findAppUserById(editedUser.getId());
 
         // Verify password
-        String encryptedPass = passwordUtils.generateSecurePassword(editedUser.getPassword());
-        if (!encryptedPass.equals(updatedUser.getPassword()))
+       String encryptedPass = passwordUtils.generateSecurePassword(editedUser.getPassword());
+        if(!encryptedPass.equals(updatedUser.getPassword()))
             throw new AuthenticationException("Invalid password provided!");
 
         // Update fields
