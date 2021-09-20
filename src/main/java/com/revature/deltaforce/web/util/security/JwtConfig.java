@@ -15,7 +15,7 @@ public class JwtConfig {
     @Value("${jwt.header}")
     private String header;
 
-    private String prefix = "Bearer ";
+    private final String prefix = "Bearer ";
 
     @Value("${jwt.secret}")
     private String secret;
@@ -23,9 +23,8 @@ public class JwtConfig {
     @Value("${jwt.expiration}")
     private int expiration;
 
-    private SignatureAlgorithm sigAlg = SignatureAlgorithm.HS256;
+    private final SignatureAlgorithm sigAlg = SignatureAlgorithm.HS256;
     private Key signingKey;
-
 
     @PostConstruct
     public void createSigningKey() {
@@ -56,5 +55,4 @@ public class JwtConfig {
     public Key getSigningKey() {
         return signingKey;
     }
-
 }

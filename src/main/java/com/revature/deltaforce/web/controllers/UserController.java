@@ -4,10 +4,10 @@ import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.services.ArticleService;
 import com.revature.deltaforce.services.UserService;
 import com.revature.deltaforce.web.dtos.AppUserDTO;
+import com.revature.deltaforce.web.dtos.Principal;
 import com.revature.deltaforce.web.dtos.edituser.EditUserEmailDTO;
 import com.revature.deltaforce.web.dtos.edituser.EditUserInfoDTO;
 import com.revature.deltaforce.web.dtos.edituser.EditUserPasswordDTO;
-import com.revature.deltaforce.web.dtos.Principal;
 import com.revature.deltaforce.web.dtos.edituser.EditUsernameDTO;
 import com.revature.deltaforce.web.util.security.IsMyAccount;
 import com.revature.deltaforce.web.util.security.Secured;
@@ -24,14 +24,13 @@ import java.util.Set;
 @RequestMapping("/user")
 public class UserController {
 
-    UserService userService;
-    ArticleService articleService;
-    TokenGenerator tokenGenerator;
+    private final UserService userService;
+    private final ArticleService articleService;
+    private final TokenGenerator tokenGenerator;
 
     @Autowired
     public UserController(UserService userService, ArticleService articleService, TokenGenerator tokenGenerator) {
         this.userService = userService;
-        this.articleService = articleService;
         this.tokenGenerator = tokenGenerator;
         this.articleService = articleService;
     }
@@ -47,6 +46,7 @@ public class UserController {
     @PostMapping(consumes = "application/json", produces = "application/json")
     public Principal registerNewUser(@RequestBody @Valid AppUser newUser, HttpServletResponse resp) {
         Principal principal = new Principal(userService.registerNewUser(newUser));
+        resp.setStatus(201);
         resp.setHeader(tokenGenerator.getJwtHeader(), tokenGenerator.createToken(principal));
         return principal;
     }
@@ -55,12 +55,12 @@ public class UserController {
     // Edit user password, returns new principal and updates JWT
     // ex: PUT user/edit/password
     @PutMapping(
-            value="/edit/password",
+            value = "/edit/password",
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
     @IsMyAccount
-    public Principal editUserPassword(@RequestBody @Valid EditUserPasswordDTO editedUser, HttpServletResponse resp){
+    public Principal editUserPassword(@RequestBody @Valid EditUserPasswordDTO editedUser, HttpServletResponse resp) {
         Principal principal = new Principal(userService.updateUserPassword(editedUser));
         resp.setHeader(tokenGenerator.getJwtHeader(), tokenGenerator.createToken(principal));
         return principal;
@@ -69,12 +69,12 @@ public class UserController {
     // Edit username, returns new principal and updates JWT
     // ex: PUT user/edit/username
     @PutMapping(
-            value="/edit/username",
+            value = "/edit/username",
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
     @IsMyAccount
-    public Principal editUsername(@RequestBody @Valid EditUsernameDTO editedUser, HttpServletResponse resp){
+    public Principal editUsername(@RequestBody @Valid EditUsernameDTO editedUser, HttpServletResponse resp) {
         AppUserDTO user = userService.findUserById(editedUser.getId());
         Principal principal = new Principal(userService.updateUsername(editedUser));
         articleService.updateUsername(user.getUsername(), editedUser.getNewUsername());
@@ -85,24 +85,24 @@ public class UserController {
     // Edit user email
     // ex: PUT user/edit/email
     @PutMapping(
-            value="/edit/email",
+            value = "/edit/email",
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
     @IsMyAccount
-    public AppUserDTO editUserEmail(@RequestBody @Valid EditUserEmailDTO editedUser){
+    public AppUserDTO editUserEmail(@RequestBody @Valid EditUserEmailDTO editedUser) {
         return new AppUserDTO(userService.updateUserEmail(editedUser));
     }
 
     // Edit user info - currently first name and last name
     // ex: PUT user/edit/userinfo
     @PutMapping(
-            value="/edit/userinfo",
+            value = "/edit/userinfo",
             consumes = "application/json",
             produces = "application/json")
     @Secured(allowedRoles = {})
     @IsMyAccount
-    public AppUserDTO editUserInfo(@RequestBody @Valid EditUserInfoDTO editedUser){
+    public AppUserDTO editUserInfo(@RequestBody @Valid EditUserInfoDTO editedUser) {
         return new AppUserDTO(userService.updateUserInfo(editedUser));
     }
 
@@ -112,32 +112,29 @@ public class UserController {
             value = "{username}"
     )
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void deleteUserByUsername(@PathVariable String username){
+    public void deleteUserByUsername(@PathVariable String username) {
         articleService.expungeUser(username);
         userService.deleteUserByUsername(username);
     }
 
-
     // User Favorites
-
-    // user/23i4on3ad4sd3fi3oj/faves?add=eggs
+    // user/23i4on3ad4sd3fi3oj/faves?add=Health
     @PostMapping(
             value = "{id}/faves",
             params = {"add"},
             produces = "application/json")
-    @Secured(allowedRoles={})
-    public Set<String> addToFavesById(@PathVariable("id") String id, @RequestParam("add") String topic){
+    @Secured(allowedRoles = {})
+    public Set<String> addToFavesById(@PathVariable("id") String id, @RequestParam("add") String topic) {
         return userService.addTopic(id, topic);
     }
 
-    // user/23i4on3ad4sd3fi3oj/faves?remove=lost%20socks
+    // user/23i4on3ad4sd3fi3oj/faves?remove=Sports
     @DeleteMapping(
             value = "{id}/faves",
             params = {"remove"},
             produces = "application/json")
-    @Secured(allowedRoles={})
-    public Set<String> removeFromFavesById(@PathVariable("id") String id, @RequestParam("add") String topic){
+    @Secured(allowedRoles = {})
+    public Set<String> removeFromFavesById(@PathVariable("id") String id, @RequestParam("remove") String topic) {
         return userService.removeTopic(id, topic);
     }
-
 }

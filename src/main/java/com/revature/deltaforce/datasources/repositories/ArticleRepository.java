@@ -9,7 +9,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Repository
 public interface ArticleRepository extends MongoRepository<DeltaArticle, String> {
     @Query("{'url' : {$in: ?0 } }")
@@ -18,7 +17,6 @@ public interface ArticleRepository extends MongoRepository<DeltaArticle, String>
     DeltaArticle findArticleById(String id);
     DeltaArticle deleteDeltaArticleByUrl(URL url);
     DeltaArticle findAllByUrl(ArrayList<URL> urls);
-
     // Gets all articles that contain a provided username
     @Query("{$or: [ { likes : ?0 }, { dislikes : ?0  },{ 'comments.username' : ?0 } ] }")
     List<DeltaArticle> findDeltaArticleByUsername(String username);
