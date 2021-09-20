@@ -41,7 +41,7 @@ public class NewsController {
         else
             url = newsServiceUrl + "top-headlines?country=us&category=" + category + "&apiKey=" + apiKey;
         NewsResponse newsResponse = restClient.getForObject(url, NewsResponse.class);
-        return articleService.newsResponseHandler(newsResponse.getArticles());
+        return articleService.newsResponseHandler(newsResponse.getArticles()).stream().sorted().collect(Collectors.toList());
     }
 
     // example: http://localhost:5000/news/q?search=tech
@@ -72,11 +72,12 @@ public class NewsController {
                 .map(url -> restClient.getForObject(url, NewsResponse.class).getArticles())
                 .map(articleService::newsResponseHandler)
                 .flatMap(list -> list.stream())
+                .sorted()
                 .collect(Collectors.toList());
 
         //If user has favorite topics, shuffle the headlines so the feed will show articles from different categories.
         if (!favTopicUrls.contains("top-headlines?country=us&apiKey="))
             Collections.shuffle(favArticles);
-        return favArticles.subList(0, 9).stream().sorted().collect(Collectors.toList());
+        return favArticles.subList(0, 9);
     }
 }
