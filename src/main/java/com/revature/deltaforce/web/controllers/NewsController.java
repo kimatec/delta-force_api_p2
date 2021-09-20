@@ -72,12 +72,11 @@ public class NewsController {
                 .map(url -> restClient.getForObject(url, NewsResponse.class).getArticles())
                 .map(articleService::newsResponseHandler)
                 .flatMap(list -> list.stream())
-                .sorted()
                 .collect(Collectors.toList());
 
         //If user has favorite topics, shuffle the headlines so the feed will show articles from different categories.
         if (!favTopicUrls.contains("top-headlines?country=us&apiKey="))
             Collections.shuffle(favArticles);
-        return favArticles.subList(0, 9);
+        return favArticles.subList(0, 9).stream().sorted().collect(Collectors.toList());
     }
 }
