@@ -154,14 +154,16 @@ public class ArticleService {
      */
     public List<String> getFavoriteUrls(String username) {
         AppUser user = userRepo.findAppUserByUsername(username);
-
-        if (!user.getFavTopics().isEmpty()) {
-            return user.getFavTopics().stream()
-                    .map(string -> "top-headlines?country=us&category=" + string + "&apiKey=")
-                    .collect(Collectors.toList());
-        } else {
+        List<String> categories = new ArrayList<>(Arrays.asList("business","entertainment","general","health","science","sports","technology"));
+        List<String> favUrls = new ArrayList<>();
+        for(String topic: user.getFavTopics())
+            if(categories.contains(topic))
+                favUrls.add("top-headlines?country=us&category=" + topic + "&apiKey=");
+            else
+                favUrls.add("everything?q="+topic+"&apiKey=");
+        if(user.getFavTopics().isEmpty())
             return new ArrayList<>(Arrays.asList("top-headlines?country=us&apiKey="));
-        }
+        return favUrls;
     }
 
     /**

@@ -186,10 +186,10 @@ public class ArticleServiceTestSuite {
     }
 
     @Test
-    public void getFavoriteUrls_returnsCorrectList_whenFavTopicsIsNotEmpty(){
+    public void getFavoriteUrls_returnsCorrectList_whenFavTopicsIsContainsACategory(){
         //Arrange
-        AppUser dummy = new AppUser("first","last","email","username","password",new HashSet<>(Arrays.asList("TOPIC")));
-        String expected = "top-headlines?country=us&category=TOPIC&apiKey=";
+        AppUser dummy = new AppUser("first","last","email","username","password",new HashSet<>(Arrays.asList("business")));
+        String expected = "top-headlines?country=us&category=business&apiKey=";
         when(mockUserRepo.findAppUserByUsername(dummy.getUsername())).thenReturn(dummy);
 
         //Act
