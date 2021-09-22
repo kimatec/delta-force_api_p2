@@ -7,9 +7,11 @@ import io.jsonwebtoken.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Objects;
 
@@ -19,7 +21,9 @@ public class ErrorResponseAspect {
     @ExceptionHandler({
             InvalidRequestException.class,
             MissingServletRequestParameterException.class,
-            MethodArgumentNotValidException.class
+            MethodArgumentNotValidException.class,
+            HttpClientErrorException.class,
+            UnsatisfiedServletRequestParameterException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleInvalidRequestException(Exception e) {
@@ -40,13 +44,22 @@ public class ErrorResponseAspect {
         return new ErrorResponse(401, e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleAuthorizationException(AuthorizationException e) {return new ErrorResponse(403, e.getMessage());}
+
     @ExceptionHandler({
             ResourceNotFoundException.class,
-            ExternalDataSourceException.class
+            ExternalDataSourceException.class,
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleResourceNotFoundException(Exception e) {
         return new ErrorResponse(404, e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleResourceNotFoundException(NullPointerException e) {return new ErrorResponse(404, "ErrorResponseAspect-generated message: NullPointer Exception");
     }
 
     @ExceptionHandler

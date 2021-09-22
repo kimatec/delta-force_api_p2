@@ -6,5 +6,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-
-@Data public class DeltaArticlesDTO { private List<DeltaArticle> articles = new ArrayList<>();}
+@Data
+public class DeltaArticlesDTO {
+    private List<DeltaArticle> articles = new ArrayList<>();
+}

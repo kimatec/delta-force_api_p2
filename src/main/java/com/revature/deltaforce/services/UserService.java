@@ -1,6 +1,5 @@
 package com.revature.deltaforce.services;
 
-
 import com.revature.deltaforce.datasources.models.AppUser;
 import com.revature.deltaforce.datasources.repositories.UserRepository;
 import com.revature.deltaforce.util.PasswordUtils;
@@ -33,28 +32,28 @@ public class UserService {
     }
 
     // Returns True if a username is taken.
-    public boolean isUsernameTaken(String username){
+    public boolean isUsernameTaken(String username) {
         return userRepo.findAppUserByUsername(username) != null;
     }
 
     // Returns True if an email is taken.
-    public boolean isEmailTaken(String email){
+    public boolean isEmailTaken(String email) {
         return userRepo.findAppUserByEmail(email) != null;
     }
 
     /**
      * Authenticate an existing user with valid credentials.
+     *
      * @param username
      * @param password
      * @return
      */
-    public Principal login(String username, String password){
+    public Principal login(String username, String password) {
         String encryptedPass = passwordUtils.generateSecurePassword(password);
         AppUser authUser = userRepo.findAppUserByUsernameAndPassword(username, encryptedPass);
 
-        if(authUser == null) {
-            throw new AuthenticationException("Invalid credentials given!");
-        }
+        if (authUser == null)
+            throw new AuthenticationException("Username and/or password incorrect!");
 
         return new Principal(authUser);
     }
@@ -66,35 +65,31 @@ public class UserService {
      * @return Principal insertedUser - new principal object for creating a session
      */
     public AppUser registerNewUser(AppUser newUser) {
-        if (userRepo.findAppUserByUsername(newUser.getUsername()) != null) {
+        if (userRepo.findAppUserByUsername(newUser.getUsername()) != null)
             throw new ResourcePersistenceException("Provided username is already taken!");
-        }
-        if (userRepo.findAppUserByEmail(newUser.getEmail()) != null) {
+        if (userRepo.findAppUserByEmail(newUser.getEmail()) != null)
             throw new ResourcePersistenceException("Provided email is already taken!");
-        }
+
         newUser.setPassword(passwordUtils.generateSecurePassword(newUser.getPassword()));
         return userRepo.save(newUser);
     }
 
     // Attempts to find a user with the provided id
     public AppUserDTO findUserById(String id) {
-
-        if (id == null || id.trim().isEmpty()) {
+        if (id == null || id.trim().isEmpty())
             throw new InvalidRequestException("Invalid id provided");
-        }
 
         return userRepo.findById(id)
                 .map(AppUserDTO::new)
                 .orElseThrow(() -> new ResourceNotFoundException("No user found with provided Id."));
-
     }
 
     // Adds a topic to a user's favorites.
-    public Set<String> addTopic (String id, String topic){
+    public Set<String> addTopic(String id, String topic) {
         AppUser authUser = userRepo.findAppUserById(id);
         HashSet<String> userFaves = authUser.getFavTopics();
 
-        if(userFaves.contains(topic))
+        if (userFaves.contains(topic))
             throw new ResourcePersistenceException("This topic is already on the user's favorite list!");
 
         userFaves.add(topic);
@@ -104,11 +99,11 @@ public class UserService {
     }
 
     // Removes a topic from a user's favorites
-    public Set<String> removeTopic (String id, String topic){
+    public Set<String> removeTopic(String id, String topic) {
         AppUser authUser = userRepo.findAppUserById(id);
         HashSet<String> userFaves = authUser.getFavTopics();
 
-        if(!userFaves.contains(topic))
+        if (!userFaves.contains(topic))
             throw new ResourcePersistenceException("This topic is not the user's favorite list!");
 
         userFaves.remove(topic);
@@ -120,7 +115,7 @@ public class UserService {
     // Methods to edit a user's information
     public AppUser updateUsername(EditUsernameDTO editedUser) {
         // Check if the new username is available
-        if(isUsernameTaken(editedUser.getNewUsername()))
+        if (isUsernameTaken(editedUser.getNewUsername()))
             throw new ResourcePersistenceException("This username is already taken!");
 
         // Retrieve original values
@@ -128,7 +123,7 @@ public class UserService {
 
         // Verify password
         String encryptedPass = passwordUtils.generateSecurePassword(editedUser.getPassword());
-        if(!encryptedPass.equals(updatedUser.getPassword()))
+        if (!encryptedPass.equals(updatedUser.getPassword()))
             throw new AuthenticationException("Invalid password provided!");
 
         // Update username
@@ -144,7 +139,7 @@ public class UserService {
 
         // Verify password
         String encryptedPass = passwordUtils.generateSecurePassword(editedUser.getPassword());
-        if(!encryptedPass.equals(updatedUser.getPassword()))
+        if (!encryptedPass.equals(updatedUser.getPassword()))
             throw new AuthenticationException("Invalid password provided!");
 
         // Encrypt new password
@@ -159,7 +154,7 @@ public class UserService {
 
     public AppUser updateUserEmail(EditUserEmailDTO editedUser) {
         // Check if the new email is available
-        if(isEmailTaken(editedUser.getNewEmail()))
+        if (isEmailTaken(editedUser.getNewEmail()))
             throw new ResourcePersistenceException("This email is already taken!");
 
         // Retrieve original values
@@ -167,7 +162,7 @@ public class UserService {
 
         // Verify password
         String encryptedPass = passwordUtils.generateSecurePassword(editedUser.getPassword());
-        if(!encryptedPass.equals(updatedUser.getPassword()))
+        if (!encryptedPass.equals(updatedUser.getPassword()))
             throw new AuthenticationException("Invalid password provided!");
 
         // Update username
@@ -182,7 +177,7 @@ public class UserService {
         AppUser updatedUser = userRepo.findAppUserById(editedUser.getId());
 
         // Verify password
-        String encryptedPass = passwordUtils.generateSecurePassword(editedUser.getPassword());
+       String encryptedPass = passwordUtils.generateSecurePassword(editedUser.getPassword());
         if(!encryptedPass.equals(updatedUser.getPassword()))
             throw new AuthenticationException("Invalid password provided!");
 
@@ -197,10 +192,8 @@ public class UserService {
     // Deletes a user by their username - admin only operation.
     public void deleteUserByUsername(String username) {
         AppUser userToDelete = userRepo.findAppUserByUsername(username);
-        if(userToDelete==null)
+        if (userToDelete == null)
             throw new InvalidRequestException("No user found with provided username.");
         userRepo.delete(userToDelete);
-
     }
-
 }

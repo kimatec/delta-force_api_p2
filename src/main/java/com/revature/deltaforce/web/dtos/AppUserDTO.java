@@ -1,17 +1,14 @@
 package com.revature.deltaforce.web.dtos;
 
-
 import com.revature.deltaforce.datasources.models.AppUser;
 import lombok.Data;
 
 import java.util.HashSet;
-import java.util.Objects;
 
 @Data
 public class AppUserDTO {
 
     private String id;
-
     private String firstName;
     private String lastName;
     private String email;
@@ -26,6 +23,4 @@ public class AppUserDTO {
         this.username = subject.getUsername();
         this.favTopics = subject.getFavTopics();
     }
-
-
 }

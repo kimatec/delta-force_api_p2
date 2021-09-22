@@ -8,10 +8,17 @@ import com.revature.deltaforce.util.exceptions.InvalidRequestException;
 import com.revature.deltaforce.util.exceptions.ResourcePersistenceException;
 import com.revature.deltaforce.web.dtos.AppUserDTO;
 import com.revature.deltaforce.web.dtos.Principal;
+import com.revature.deltaforce.web.dtos.edituser.EditUserEmailDTO;
+import com.revature.deltaforce.web.dtos.edituser.EditUserInfoDTO;
+import com.revature.deltaforce.web.dtos.edituser.EditUserPasswordDTO;
+import com.revature.deltaforce.web.dtos.edituser.EditUsernameDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -134,22 +141,85 @@ public class UserServiceTestSuite {
     // addTopic Tests
     @Test
     public void addTopic_returnsSuccessfully_whenProvided_newTopic(){
+        // Arrange
+        String validId = "valid-id";
+        String validTopic = "fav-topic";
+        AppUser expected = new AppUser();
+        expected.setId(validId);
+        when(mockUserRepo.findAppUserById(expected.getId())).thenReturn(expected);
+        when(mockUserRepo.save(any())).thenReturn(expected);
+
+        // Act
+        Set<String> actual = sut.addTopic(validId, validTopic);
+
+        //Assert
+        assertEquals(actual, expected.getFavTopics());
 
     }
 
     @Test
     public void addTopic_throwsException_whenProvided_existingTopic(){
+        //Arrange
+        String validId = "valid-id";
+        String existing = "original";
+        String duplicate = "original";
+        AppUser validUser = new AppUser();
+        validUser.setId(validId);
+        HashSet<String> userFav = new HashSet<>();
+        userFav.add(existing);
+        validUser.setFavTopics(userFav);
+        when(mockUserRepo.findAppUserById(validUser.getId())).thenReturn(validUser);
+
+
+        //Act
+        ResourcePersistenceException e = assertThrows(ResourcePersistenceException.class, () -> sut.addTopic(validId, duplicate));
+
+        //Assert
+        assertEquals("This topic is already on the user's favorite list!", e.getMessage());
 
     }
 
     // removeTopic Tests
     @Test
     public void removeTopic_returnsSuccessfully_whenProvided_existingTopic(){
+        // Arrange
+        String validId = "valid-id";
+        String validTopic = "fav-topic";
+        AppUser expected = new AppUser();
+        expected.setId(validId);
+        HashSet<String> userFav = new HashSet<>();
+        userFav.add(validTopic);
+        expected.setFavTopics(userFav);
+        when(mockUserRepo.findAppUserById(expected.getId())).thenReturn(expected);
+        when(mockUserRepo.save(expected)).thenReturn(expected);
+
+
+        // Act
+        Set<String> actual = sut.removeTopic(validId, validTopic);
+
+        //Assert
+        assertEquals(actual, expected.getFavTopics());
 
     }
 
     @Test
     public void removeTopic_throwsException_whenProvided_nonexistentTopic(){
+        //Arrange
+        String validId = "valid-id";
+        String validTopic = " ";
+        AppUser expected = new AppUser();
+        expected.setId(validId);
+        HashSet<String> userFav = new HashSet<>();
+        userFav.add(validTopic);
+        when(mockUserRepo.findAppUserById(expected.getId())).thenReturn(expected);
+        when(mockUserRepo.save(expected)).thenReturn(expected);
+
+        //Act
+        ResourcePersistenceException e = assertThrows(ResourcePersistenceException.class, () -> sut.removeTopic(validId, validTopic));
+
+        //Assert
+        assertEquals("This topic is not the user's favorite list!", e.getMessage());
+
 
     }
 
@@ -181,4 +251,256 @@ public class UserServiceTestSuite {
         verify(mockUserRepo,times(0)).findById(invalidId);
     }
 
+    //update User information - username
+    @Test
+    public void updateUsername_returnNewUsername_whenProvided_validId(){
+        //Arrange
+        String validId = "valid-id";
+        AppUser validUser = new AppUser();
+        EditUsernameDTO expectedUser = new EditUsernameDTO();
+        expectedUser.setId(validId);
+        validUser.setPassword("encrypted");
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(validUser);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+        when(mockUserRepo.save(any())).thenReturn(validUser);
+
+
+        //Act
+        AppUser actualUser = sut.updateUsername(expectedUser);
+
+        //Assert
+        assertEquals(actualUser.getId(), expectedUser.getNewUsername());
+    }
+
+    @Test
+    public void updateUsername_throwsException_whenProvidedInvalidPassword(){
+        //Arrange
+
+        String invalidPass = "wrong-password";
+        String existingPass = "original";
+
+        AppUser user = new AppUser();
+        EditUsernameDTO expectedUser = new EditUsernameDTO();
+
+        expectedUser.setPassword(invalidPass);
+        expectedUser.setNewUsername("validUsername");
+        user.setPassword(existingPass);
+
+        when(mockUserRepo.findAppUserByUsername(expectedUser.getNewUsername())).thenReturn(null);
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(user);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+
+        //Act
+        AuthenticationException e = assertThrows(AuthenticationException.class, () -> sut.updateUsername(expectedUser));
+
+        //Assert
+        assertEquals("Invalid password provided!", e.getMessage());
+
+    }
+
+    @Test
+    public void getNewUsername_throwsResourcePersistenceException_whenProvided_usernameTaken(){
+        //Arrange
+
+        String existingUsername = "original";
+        String duplicateUsername = "original";
+        AppUser validUser = new AppUser();
+        EditUsernameDTO expectedUser = new EditUsernameDTO();
+        expectedUser.setNewUsername(duplicateUsername);
+        validUser.setUsername(existingUsername);
+        when(mockUserRepo.findAppUserByUsername(duplicateUsername)).thenReturn(validUser);
+
+        //Act
+        ResourcePersistenceException e = assertThrows(ResourcePersistenceException.class, () -> sut.updateUsername(expectedUser));
+
+        //Assert
+        assertEquals("This username is already taken!", e.getMessage());
+
+    }
+
+
+    @Test
+    public void updateUserPassword_returnNewPassword_whenProvided_ValidId(){
+        //Arrange
+        String validId = "valid-id";
+        AppUser validUser = new AppUser();
+        EditUserPasswordDTO expectedUser = new EditUserPasswordDTO();
+        expectedUser.setId(validId);
+        validUser.setPassword("encrypted");
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(validUser);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+        when(mockUserRepo.save(any())).thenReturn(validUser);
+
+        //Act
+        AppUser actualUser = sut.updateUserPassword(expectedUser);
+
+        //Assert
+        assertEquals(actualUser.getId(), expectedUser.getNewPassword());
+
+    }
+
+    @Test
+    public void updateUserPassword_throwsException_whenProvidedInvalidPassword(){
+        //Arrange
+
+        String invalidPass = "wrong-password";
+        String existingPass = "original";
+
+        AppUser user = new AppUser();
+        EditUserPasswordDTO expectedUser = new EditUserPasswordDTO();
+
+        expectedUser.setPassword(invalidPass);
+        expectedUser.setNewPassword("validPass");
+        user.setPassword(existingPass);
+
+        when(mockUserRepo.findAppUserByUsername(expectedUser.getNewPassword())).thenReturn(null);
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(user);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+
+        //Act
+        AuthenticationException e = assertThrows(AuthenticationException.class, () -> sut.updateUserPassword(expectedUser));
+
+        //Assert
+        assertEquals("Invalid password provided!", e.getMessage());
+
+    }
+
+    @Test
+    public void updateUserEmail_returnNewEmail_whenProvided_ValidId(){
+        //Arrange
+        String validId = "valid-id";
+        AppUser validUser = new AppUser();
+        EditUserEmailDTO expectedUser = new EditUserEmailDTO();
+        expectedUser.setId(validId);
+        validUser.setPassword("encrypted");
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(validUser);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+        when(mockUserRepo.save(any())).thenReturn(validUser);
+
+        //Act
+        AppUser actualUser = sut.updateUserEmail(expectedUser);
+
+        //Assert
+        assertEquals(actualUser.getId(), expectedUser.getNewEmail());
+
+    }
+
+    @Test
+    public void updateUserEmail_throwsException_whenProvidedInvalidPassword(){
+        //Arrange
+
+        String invalidPass = "wrong-password";
+        String existingPass = "original";
+
+        AppUser user = new AppUser();
+        EditUserEmailDTO expectedUser = new EditUserEmailDTO();
+
+        expectedUser.setPassword(invalidPass);
+        expectedUser.setNewEmail("validEmail");
+        user.setPassword(existingPass);
+
+        when(mockUserRepo.findAppUserByUsername(expectedUser.getNewEmail())).thenReturn(null);
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(user);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+
+        //Act
+        AuthenticationException e = assertThrows(AuthenticationException.class, () -> sut.updateUserEmail(expectedUser));
+
+        //Assert
+        assertEquals("Invalid password provided!", e.getMessage());
+
+    }
+
+    @Test
+    public void getNewEmail_throwsResourcePersistenceException_whenProvided_emailTaken(){
+        //Arrange
+
+        String existingEmail = "original";
+        String duplicateEmail = "original";
+        AppUser validUser = new AppUser();
+        EditUserEmailDTO expectedUser = new EditUserEmailDTO();
+        expectedUser.setNewEmail(duplicateEmail);
+        validUser.setEmail(existingEmail);
+        when(mockUserRepo.findAppUserByEmail(duplicateEmail)).thenReturn(validUser);
+
+        //Act
+        ResourcePersistenceException e = assertThrows(ResourcePersistenceException.class, () -> sut.updateUserEmail(expectedUser));
+
+        //Assert
+        assertEquals("This email is already taken!", e.getMessage());
+
+    }
+
+
+    @Test
+    public void updateUserInfo_returnNewUserInfo_whenProvided_validId(){
+        //Arrange
+        String validId = "valid-id";
+        AppUser validUser = new AppUser();
+        EditUserInfoDTO expectedUser = new EditUserInfoDTO();
+        expectedUser.setId(validId);
+        validUser.setPassword("encrypted");
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(validUser);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+        when(mockUserRepo.save(any())).thenReturn(validUser);
+
+        //Act
+        AppUser actualUser = sut.updateUserInfo(expectedUser);
+
+        //Assert
+        assertEquals(actualUser.getId(), expectedUser.getNewFirstName(), expectedUser.getNewLastName());
+    }
+
+    @Test
+    public void updateUserInfo_throwsException_whenProvidedInvalidPassword(){
+        //Arrange
+
+        String invalidPass = "wrong-password";
+        String existingPass = "original";
+
+        AppUser user = new AppUser();
+        EditUserInfoDTO expectedUser = new EditUserInfoDTO();
+
+        expectedUser.setPassword(invalidPass);
+        expectedUser.setId("validId");
+        user.setPassword(existingPass);
+
+        when(mockUserRepo.findAppUserByUsername(expectedUser.getId())).thenReturn(null);
+        when(mockUserRepo.findAppUserById(expectedUser.getId())).thenReturn(user);
+        when(mockPasswordUtils.generateSecurePassword(expectedUser.getPassword())).thenReturn("encrypted");
+
+        //Act
+        AuthenticationException e = assertThrows(AuthenticationException.class, () -> sut.updateUserInfo(expectedUser));
+
+        //Assert
+        assertEquals("Invalid password provided!", e.getMessage());
+
+    }
+
+    @Test
+    public void deleteUserByUsername_whenProvided_username(){
+        //Arrange
+        String validUsername = "username";
+        AppUser expectedResult = new AppUser();
+        expectedResult.setUsername(validUsername);
+        when(mockUserRepo.findAppUserByUsername(expectedResult.getUsername())).thenReturn(expectedResult);
+
+        //Act
+        sut.deleteUserByUsername(validUsername);
+
+        //Assert
+        verify(mockUserRepo, times(1)).delete(any());
+    }
+
+    @Test
+    public void findAppUserByUsername_throwsInvalidRequestException_whenProvided_invalidUsername(){
+        // Arrange
+        String invalidUsername = "";
+
+        // Act
+        InvalidRequestException e = assertThrows(InvalidRequestException.class,() -> sut.deleteUserByUsername(invalidUsername));
+
+        // Assert
+        verify(mockUserRepo,times(0)).delete(any());
+    }
 }
