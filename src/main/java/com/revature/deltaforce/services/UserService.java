@@ -53,7 +53,7 @@ public class UserService {
         AppUser authUser = userRepo.findAppUserByUsernameAndPassword(username, encryptedPass);
 
         if (authUser == null)
-            throw new AuthenticationException("Invalid credentials given!");
+            throw new AuthenticationException("Username and/or password incorrect!");
 
         return new Principal(authUser);
     }
